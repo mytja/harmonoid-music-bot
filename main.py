@@ -6,10 +6,6 @@ from discord.ext import commands
 from discord.ext.commands import Bot
 import harmonoidservice as hs
 
-from fastapi import FastAPI
-
-app = FastAPI()
-
 TOKEN = os.environ['DISCORD_TOKEN']
 
 bot = commands.Bot(command_prefix='!')
