@@ -1,0 +1,7 @@
+git+https://github.com/sigma67/ytmusicapi@master
+git+https://github.com/nficano/pytube@master
+mutagen
+aiofiles
+httpx
+discord
+pynacl
