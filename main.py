@@ -6,6 +6,10 @@ from discord.ext import commands
 from discord.ext.commands import Bot
 import harmonoidservice as hs
 
+from fastapi import FastAPI
+
+app = FastAPI()
+
 TOKEN = os.environ['DISCORD_TOKEN']
 
 bot = commands.Bot(command_prefix='!')
@@ -32,8 +36,6 @@ async def play(ctx, *, arg):
         return
 
     filename = await harmonoid.trackDownload(trackName = arg, trackId=None, albumId=None)
-
-    discord.opus.load_opus(name=filename)
 
     channel = discord.utils.get(ctx.guild.channels, name="Music")
     channel_id = channel.id

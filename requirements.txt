@@ -5,3 +5,5 @@ aiofiles
 httpx
 discord
 pynacl
+fastapi
+uvicorn[standard]
