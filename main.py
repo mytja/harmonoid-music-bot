@@ -6,7 +6,7 @@ from discord.ext import commands
 from discord.ext.commands import Bot
 import harmonoidservice as hs
 
-TOKEN = os.getenv['DISCORD_TOKEN']
+TOKEN = os.environ['DISCORD_TOKEN']
 
 bot = commands.Bot(command_prefix='!')
 
