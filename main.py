@@ -33,6 +33,8 @@ async def play(ctx, *, arg):
 
     filename = await harmonoid.trackDownload(trackName = arg, trackId=None, albumId=None)
 
+    discord.opus.load_opus()
+
     channel = discord.utils.get(ctx.guild.channels, name="Music")
     channel_id = channel.id
     channel = bot.get_channel(channel_id)
