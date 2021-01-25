@@ -95,6 +95,27 @@ async def resume(ctx):
     if vcid != None:
         vc[vcid].resume()
         await ctx.send("Okay")
+        
+@bot.command()
+async def refresh(ctx):
+    global vc
+    global vc_id
+    vcid = vc_id.index(ctx.message.guild.id)
+    
+    try:
+        vc_id.remove(ctx.message.guild.id)
+    except:
+        print("Server wasn't in list of servers, so it can't be refreshed!")
+    
+    try:
+        del vc[vcid]
+    except:
+        print("Server wasn't in list of servers, so it can't be refreshed!")
+    
+    ctx.send("Succesfully refreshed server with ID: "+str(ctx.message.guild.id))
+    
+    
+    
 
 
 bot.run(TOKEN)
