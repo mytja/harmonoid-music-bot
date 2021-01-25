@@ -62,9 +62,10 @@ async def play(ctx, *, arg):
 @bot.command()
 async def stop(ctx):
     server_id = ctx.message.guild.id
-    if vc.index(server_id) != None:
-        if vc.index(server_id).is_playing():
-            vc.index(server_id).stop()
+    vcid = vc_id.index(server_id)
+    if vcid != None:
+        if vc[vcid].is_playing():
+            vc[vcid].stop()
             await ctx.send("Okay")
         else:
             await ctx.send("Cannot stop! No song is playing!")
@@ -72,9 +73,10 @@ async def stop(ctx):
 @bot.command()
 async def pause(ctx):
     server_id = ctx.message.guild.id
-    if vc.index(server_id) != None:
-        if vc.index(server_id).is_playing():
-            vc.index(server_id).pause()
+    vcid = vc_id.index(server_id)
+    if vcid != None:
+        if vc[vcid].is_playing():
+            vc[vcid].pause()
             await ctx.send("Okay")
         else:
             await ctx.send("Cannot pause! No song is playing!")
@@ -82,8 +84,9 @@ async def pause(ctx):
 @bot.command()
 async def resume(ctx):
     server_id = ctx.message.guild.id
-    if vc.index(server_id) != None:
-        vc.resume()
+    vcid = vc_id.index(server_id)
+    if vcid != None:
+        vc[vcid].resume()
         await ctx.send("Okay")
 
 
