@@ -3,12 +3,12 @@ import os
 
 import discord
 from discord.ext import commands
-from discord.ext.commands import Bot
+from discord.ext.commands import AutoShardedBot
 import harmonoidservice as hs
 
 TOKEN = os.environ['DISCORD_TOKEN']
 
-bot = commands.Bot(command_prefix='!')
+bot = commands.AutoShardedBot(command_prefix='!')
 
 harmonoid = hs.HarmonoidService()
 
