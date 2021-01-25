@@ -9,6 +9,6 @@
 |------------------------|------------------------------------------------------------|
 | !play <song name>      | Joins a voice channel called Music, and plays the song     |
 | !download <song name>  | Downloads a song, and uploads it into chat for downloading |
-
-# Bot is offline! What can I do?
-When bot is offline, our server is asleep. You can visit https://harmonoid-bot.herokuapp.com/ to wake it up!
+| !stop                  | Stops playing a song                                       |
+| !pause                 | Pauses playing a song                                      |
+| !resume                | Resumes playing a song                                     |
