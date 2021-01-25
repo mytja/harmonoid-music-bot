@@ -32,12 +32,18 @@ async def play(ctx, *, arg):
     global vc_id
     if ctx.author == bot.user:
         return
+    
+    try:
+        filename = await harmonoid.trackDownload(trackName = arg, trackId=None, albumId=None)
+    except:
+        ctx.send("Sorry, but there was an Internal Server Error! Please report it to our maintainers!")
 
-    filename = await harmonoid.trackDownload(trackName = arg, trackId=None, albumId=None)
-
-    channel = discord.utils.get(ctx.guild.channels, name="Music")
-    channel_id = channel.id
-    channel = bot.get_channel(channel_id)
+    try:
+        channel = discord.utils.get(ctx.guild.channels, name="Music")
+        channel_id = channel.id
+        channel = bot.get_channel(channel_id)
+    except:
+        ctx.send("No voice channel called Music! Please create one!")
     
     server_id = ctx.message.guild.id
     
@@ -53,6 +59,7 @@ async def play(ctx, *, arg):
         vc[vcid].play(discord.FFmpegPCMAudio(filename), after=lambda e: print('[ffmpeg-player] Successfully summoned FFMPEG player!', e))
     except Exception as e:
         print(f"Failed to summon FFMPEG player - Exception: ", e)
+        ctx.send("Failed to summon a player :cry: ! Please report a problem to our maintainers")
     
     if (len(channel.members) == 1):
         await ctx.send("Come and join me in the voice channel")
