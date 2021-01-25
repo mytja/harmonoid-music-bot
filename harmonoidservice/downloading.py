@@ -9,7 +9,7 @@ import ytmusicapi
 from .async_mutagen import Metadata
 
 MUSICAPI_VERSION = ytmusicapi.__version__
-FFMPEG_COMMAND = "ffmpeg -i {trackId}.webm -vn -c:a copy {trackId}.ogg"
+FFMPEG_COMMAND = 'ffmpeg -i "{trackId}.webm" -vn -c:a copy "{trackId}.ogg"'
 
 
 class DownloadHandler:
@@ -31,7 +31,7 @@ class DownloadHandler:
             print(
                 f"[ytmusicapi] Successfully retrieved metadata of track ID: {trackId}."
             )
-            await self.saveAudio(trackInfo)
+            await self.saveAudio(trackInfo, metadataAdd=True)
             print(f"[server] Sending audio binary for track ID: {trackId}")
             return trackId+".ogg"
         else:
@@ -39,7 +39,33 @@ class DownloadHandler:
             print(f"[server] Sending status code 500 for track ID: {trackId}.")
             return 500
 
-    async def saveAudio(self, trackInfo):
+    async def YTdownload(self, trackName):
+        if trackName:
+            print(f"[server] Download request in name format.")
+            try:
+                trackId = self.browsingHandler.searchYT(trackName)
+                trackId = trackId["result"][0]["id"]
+            except Exception as e:
+                print("[track-search] "+e)
+                return
+        
+        if os.path.isfile(f"{trackId}.ogg"):
+            print(
+                f"[pytube] Track already downloaded for track ID: {trackId}.\n[server] Sending audio binary for track ID: {trackId}."
+            )
+            return trackId+".ogg"
+        
+        trackInfo = None
+        
+        try:
+            await self.saveAudio(trackInfo, metadataAdd=False)
+        except:
+            print(f"[save] {e}")
+
+        print(f"[server] Sending audio binary for track ID: {trackId}")
+        return trackId+".ogg"
+
+    async def saveAudio(self, trackInfo, metadataAdd):
         filename = f"{trackInfo['trackId']}.webm"
         print(f"[httpx] Downloading track ID: {trackInfo['trackId']}.")
         async with httpx.AsyncClient() as client:
@@ -75,7 +101,10 @@ class DownloadHandler:
             """
             Adding metadata.
             """
-            await Metadata(trackInfo).add()
+            if metadataAdd:
+                await Metadata(trackInfo).add()
+            else:
+                print("Skipping metadata adding!")
             print(
                 f"[pytube] Track download successful for track ID: {trackInfo['trackId']}."
             )

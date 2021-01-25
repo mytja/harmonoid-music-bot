@@ -1,4 +1,6 @@
 import asyncio
+from youtubesearchpython import VideosSearch
+import json
 
 
 class BrowsingHandlerInternal:
@@ -254,3 +256,7 @@ class BrowsingHandler(BrowsingHandlerInternal):
         watchPlaylist = await self.ytMusic.getWatchPlaylist(trackId)
         watchPlaylistId = watchPlaylist["lyrics"]
         return await self.ytMusic.getLyrics(watchPlaylistId)
+    
+    def searchYT(self, videoName):
+        videosSearch = VideosSearch(videoName, limit = 1)
+        return videosSearch.result()
