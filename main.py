@@ -97,10 +97,13 @@ async def play_yt(ctx, *, arg):
     server_id = ctx.message.guild.id
     
     if server_id not in vc_id:
-        print("[server-append] Server was not appended!")
-        vc1 = await channel.connect()
-        vc.append(vc1)
-        vc_id.append(server_id)
+        try:
+            print("[server-append] Server was not appended!")
+            vc1 = await channel.connect()
+            vc.append(vc1)
+            vc_id.append(server_id)
+        except:
+            await ctx.send("Failed to join a voice channel :cry:! Our developers would have to reboot the server now! Please try to use command !refresh")
     
     vcid = vc_id.index(server_id)
     
@@ -155,6 +158,11 @@ async def refresh(ctx):
         vc_id.remove(ctx.message.guild.id)
     except:
         print("Server wasn't in list of servers, so it can't be refreshed!")
+    
+    try:
+        vc[vcid].disconnect()
+    except:
+        print("Couldn't disconnect from a voice channel!")
     
     try:
         del vc[vcid]
