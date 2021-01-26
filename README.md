@@ -5,10 +5,10 @@
 
 
 # Commands
-| Command                | What does it do                                            |
-|------------------------|------------------------------------------------------------|
-| !play <song name>      | Joins a voice channel called Music, and plays the song     |
-| !download <song name>  | Downloads a song, and uploads it into chat for downloading |
-| !stop                  | Stops playing a song                                       |
-| !pause                 | Pauses playing a song                                      |
-| !resume                | Resumes playing a song                                     |
+| Command                | What does it do                                                                           |
+|------------------------|-------------------------------------------------------------------------------------------|
+| !play <song name>      | Joins a voice channel called Music, and plays the song from Youtube Music                 |
+| !play_yt <song name>   | Joins a voice channel called Music, and plays the song or video (only audio) from YouTube |
+| !stop                  | Stops playing a song                                                                      |
+| !pause                 | Pauses playing a song                                                                     |
+| !resume                | Resumes playing a song                                                                    |
