@@ -35,8 +35,9 @@ async def play(ctx, *, arg):
     
     try:
         filename = await harmonoid.trackDownload(trackName = arg, trackId=None, albumId=None)
-    except:
+    except Exception as e:
         await ctx.send("Sorry, but there was an Internal Server Error! Please report it to our maintainers!")
+        print(f"[track-download] {e}")
 
     try:
         channel = discord.utils.get(ctx.guild.channels, name="Music")
@@ -56,7 +57,7 @@ async def play(ctx, *, arg):
     vcid = vc_id.index(server_id)
     
     try:
-        vc[vcid].play(discord.FFmpegPCMAudio(filename), after=lambda e: print('[ffmpeg-player] Successfully summoned FFMPEG player!', e))
+        vc[vcid].play(discord.FFmpegPCMAudio(filename), after=print('[ffmpeg-player] Successfully summoned FFMPEG player!'))
     except Exception as e:
         print(f"Failed to summon FFMPEG player - Exception: ", e)
         ctx.send("Failed to summon a player :cry: ! Please report a problem to our maintainers")
@@ -70,6 +71,13 @@ async def play(ctx, *, arg):
 async def play_yt(ctx, *, arg):
     global vc
     global vc_id
+    
+    try:
+        await harmonoid.youtube.getJS()
+    except Exception as e:
+        print(f"Failed to get JS: {e}")
+    
+    
     if ctx.author == bot.user:
         return
     
@@ -153,7 +161,7 @@ async def refresh(ctx):
     except:
         print("Server wasn't in list of servers, so it can't be refreshed!")
     
-    ctx.send("Succesfully refreshed server with ID: "+str(ctx.message.guild.id))
+    await ctx.send("Succesfully refreshed server with ID: "+str(ctx.message.guild.id))
     
     
     

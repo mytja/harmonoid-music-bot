@@ -6,10 +6,11 @@ import os
 import sys
 import asyncio
 import ytmusicapi
+from pytube import YouTube
 from .async_mutagen import Metadata
 
 MUSICAPI_VERSION = ytmusicapi.__version__
-FFMPEG_COMMAND = 'ffmpeg -i "{trackId}.webm" -vn -c:a copy "{trackId}.ogg"'
+FFMPEG_COMMAND = 'ffmpeg -i {trackId}.webm -vn -c:a copy {trackId}.ogg'
 
 
 class DownloadHandler:
@@ -46,7 +47,7 @@ class DownloadHandler:
                 trackId = self.browsingHandler.searchYT(trackName)
                 trackId = trackId["result"][0]["id"]
             except Exception as e:
-                print("[track-search] "+e)
+                print(f"[track-search] {e}")
                 return
         
         if os.path.isfile(f"{trackId}.ogg"):
@@ -54,16 +55,43 @@ class DownloadHandler:
                 f"[pytube] Track already downloaded for track ID: {trackId}.\n[server] Sending audio binary for track ID: {trackId}."
             )
             return trackId+".ogg"
+            
+        url = "https://youtube.com/watch?v="+trackId
+        print("[url] "+url)
         
-        trackInfo = None
+        trackInfo = {
+            "trackId": trackId,
+            "url": url
+        }
+        
+        filename = trackId
+        
+        YouTube(url).streams.get_by_itag(251).download(filename = filename)
         
         try:
-            await self.saveAudio(trackInfo, metadataAdd=False)
-        except:
-            print(f"[save] {e}")
+            await self.ffmpeg_conv(trackInfo)
+        except Exception as e:
+            print(f"[ffmpeg-conv] {e}")
 
         print(f"[server] Sending audio binary for track ID: {trackId}")
         return trackId+".ogg"
+
+    async def ffmpeg_conv(self, trackInfo):
+        process = subprocess.Popen(
+            FFMPEG_COMMAND.format(trackId=trackInfo["trackId"]),
+            shell=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+        )
+        while process.poll() is None:
+            await asyncio.sleep(0.1)
+        _, stderr = process.communicate()
+        stderr = stderr.decode()
+
+        if process.poll() != 0:
+            print("[stderr]", stderr)
+
+        asyncio.ensure_future(aiofiles.os.remove(f"{trackInfo['trackId']}.webm"))
 
     async def saveAudio(self, trackInfo, metadataAdd):
         filename = f"{trackInfo['trackId']}.webm"
@@ -101,7 +129,7 @@ class DownloadHandler:
             """
             Adding metadata.
             """
-            if metadataAdd:
+            if metadataAdd == True:
                 await Metadata(trackInfo).add()
             else:
                 print("Skipping metadata adding!")
@@ -113,10 +141,7 @@ class DownloadHandler:
             print(
                 f"[server] Sending status code 500 for track ID: {trackInfo['trackId']}."
             )
-            raise HTTPException(
-                status_code=500,
-                detail=f"[pytube] Could not download track ID: {trackInfo['trackId']}.",
-            )
+            return 500
 
     """
     Yet to implement...
