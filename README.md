@@ -12,3 +12,4 @@
 | !stop                  | Stops playing a song                                                                      |
 | !pause                 | Pauses playing a song                                                                     |
 | !resume                | Resumes playing a song                                                                    |
+| !lyrics <song name>    | Sends lyrics of the song into the chat if he finds them                                   |
