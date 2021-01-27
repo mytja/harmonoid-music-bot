@@ -56,8 +56,8 @@ class DownloadHandler:
         trackId = result["id"]
         
         title = result["title"]
-        title = title.replace("`", "")
-        title = title.replace("´", "")
+        #title = title.replace("`", "")
+        #title = title.replace("´", "")
         title = title.replace("'", "")
         title = title.replace('"', "")
         print(title)
