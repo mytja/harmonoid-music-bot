@@ -40,15 +40,33 @@ class DownloadHandler:
             print(f"[server] Sending status code 500 for track ID: {trackId}.")
             return 500
 
-    async def YTdownload(self, trackName):
+    async def YTdownload(self, trackName, author):
         if trackName:
             print(f"[server] Download request in name format.")
             try:
-                trackId = self.browsingHandler.searchYT(trackName)
-                trackId = trackId["result"][0]["id"]
+                result = self.browsingHandler.searchYT(trackName)
+                result = result["result"][0]
             except Exception as e:
                 print(f"[track-search] {e}")
                 return
+        
+        url = "https://youtube.com/watch?v="+result["id"]
+        print("[url] "+url)
+        
+        trackId = result["id"]
+        
+        trackInfo = {
+            "trackId": trackId,
+            "url": url,
+            "filename": trackId+".ogg",
+            "thumbnail": result["thumbnails"][0]["url"],
+            "duration": result["duration"],
+            "opusTrackName": trackId+".webm",
+            "title": result["title"],
+            "author": author
+        }
+        print(trackInfo)
+        
         
         if os.path.isfile(f"{trackId}.ogg"):
             print(
@@ -56,17 +74,10 @@ class DownloadHandler:
             )
             return trackId+".ogg"
             
-        url = "https://youtube.com/watch?v="+trackId
-        print("[url] "+url)
-        
-        trackInfo = {
-            "trackId": trackId,
-            "url": url
-        }
         
         filename = trackId
         
-        YouTube(url).streams.get_by_itag(251).download(filename = filename)
+        YouTube(url).streams.get_by_itag(251).download(filename = trackInfo["trackId"])
         
         try:
             await self.ffmpeg_conv(trackInfo)
@@ -74,7 +85,7 @@ class DownloadHandler:
             print(f"[ffmpeg-conv] {e}")
 
         print(f"[server] Sending audio binary for track ID: {trackId}")
-        return trackId+".ogg"
+        return trackInfo
 
     async def ffmpeg_conv(self, trackInfo):
         process = subprocess.Popen(

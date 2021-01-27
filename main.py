@@ -30,13 +30,17 @@ async def on_ready():
 async def play(ctx, *, arg):
     global vc
     global vc_id
+    
+    server_id = ctx.message.guild.id
+    vcid = vc_id.index(server_id)
+    
     if ctx.author == bot.user:
         return
     
     try:
         filename = await harmonoid.trackDownload(trackName = arg, trackId=None, albumId=None)
     except Exception as e:
-        await ctx.send("Sorry, but there was an Internal Server Error! Please report it to our maintainers!")
+        await ctx.send("Sorry, but there was an Internal Server Error :cry:! Please report it to our maintainers!")
         print(f"[track-download] {e}")
 
     try:
@@ -76,13 +80,14 @@ async def play_yt(ctx, *, arg):
         await harmonoid.youtube.getJS()
     except Exception as e:
         print(f"Failed to get JS: {e}")
+        await ctx.send("Failed to get JS from player :sad:")
     
     
     if ctx.author == bot.user:
         return
     
     try:
-        filename = await harmonoid.YTdownload(trackName = arg)
+        filename = await harmonoid.YTdownload(trackName = arg, author = ctx.author)
     except Exception as e:
         await ctx.send("Sorry, but there was an Internal Server Error! Please report it to our maintainers!")
         print(f"[track-download] {e}")
@@ -108,7 +113,7 @@ async def play_yt(ctx, *, arg):
     vcid = vc_id.index(server_id)
     
     try:
-        vc[vcid].play(discord.FFmpegPCMAudio(filename), after=lambda e: print('[ffmpeg-player] Successfully summoned FFMPEG player!', e))
+        vc[vcid].play(discord.FFmpegPCMAudio(filename["filename"]), after=lambda e: print('[ffmpeg-player] Successfully summoned FFMPEG player!', e))
     except Exception as e:
         print(f"Failed to summon FFMPEG player - Exception: ", e)
         await ctx.send("Failed to summon a player :cry: ! Please report a problem to our maintainers")
@@ -117,6 +122,7 @@ async def play_yt(ctx, *, arg):
         await ctx.send("Come and join me in the voice channel")
     else:
         await ctx.send("Okay")
+    await embedNow(music = filename, ctx = ctx)
 
 @bot.command()
 async def stop(ctx):
@@ -160,9 +166,20 @@ async def refresh(ctx):
         print("Server wasn't in list of servers, so it can't be refreshed!")
     
     try:
+        vc[vcid].stop()
+    except:
+        print("Couldn't stop!")
+    
+    try:
         vc[vcid].disconnect()
     except:
         print("Couldn't disconnect from a voice channel!")
+    
+    #try:
+    #    np[vcid] = None
+    #except Exception as e:
+    #    print(e)
+        
     
     try:
         del vc[vcid]
@@ -171,7 +188,18 @@ async def refresh(ctx):
     
     await ctx.send("Succesfully refreshed server with ID: "+str(ctx.message.guild.id))
     
-    
+async def embedNow(music, ctx):
+    embed=discord.Embed(title="Now playing :", description=f"**[{music['title']}]({music['url']})**", color=discord.Colour.random())
+    embed.set_thumbnail(url=music["thumbnail"])
+    embed.add_field(name="Requested by :", value=f"`{music['author']}`", inline=True)
+    embed.add_field(name="Duration :", value=f"`{music['duration']}`", inline=True)
+    await ctx.send(embed=embed)
+
+@bot.command()
+async def lyrics(ctx, *, arg):
+    lyrics = await harmonoid.getLyrics(trackName = arg, trackId = None)
+    if lyrics["lyricsFound"] == True:
+        await ctx.send(lyrics["lyrics"])
     
 
 
