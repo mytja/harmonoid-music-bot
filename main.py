@@ -31,9 +31,6 @@ async def play(ctx, *, arg):
     global vc
     global vc_id
     
-    server_id = ctx.message.guild.id
-    vcid = vc_id.index(server_id)
-    
     if ctx.author == bot.user:
         return
     
@@ -113,7 +110,7 @@ async def play_yt(ctx, *, arg):
     vcid = vc_id.index(server_id)
     
     try:
-        vc[vcid].play(discord.FFmpegPCMAudio(filename["filename"]), after=lambda e: print('[ffmpeg-player] Successfully summoned FFMPEG player!', e))
+        vc[vcid].play(discord.FFmpegPCMAudio(filename["trackId"]+".ogg"), after=lambda e: print('[ffmpeg-player] Successfully summoned FFMPEG player!', e))
     except Exception as e:
         print(f"Failed to summon FFMPEG player - Exception: ", e)
         await ctx.send("Failed to summon a player :cry: ! Please report a problem to our maintainers")
@@ -122,7 +119,10 @@ async def play_yt(ctx, *, arg):
         await ctx.send("Come and join me in the voice channel")
     else:
         await ctx.send("Okay")
-    await embedNow(music = filename, ctx = ctx)
+    try:
+        await embedNow(music = filename, ctx = ctx)
+    except Exception as e:
+        print(f"[embed-exception] Exception: {e}")
 
 @bot.command()
 async def stop(ctx):

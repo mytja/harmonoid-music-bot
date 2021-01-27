@@ -5,6 +5,7 @@ import aiofiles.os
 import os
 import sys
 import asyncio
+import json
 import ytmusicapi
 from pytube import YouTube
 from .async_mutagen import Metadata
@@ -51,9 +52,15 @@ class DownloadHandler:
                 return
         
         url = "https://youtube.com/watch?v="+result["id"]
-        print("[url] "+url)
         
         trackId = result["id"]
+        
+        title = result["title"]
+        title = title.replace("`", "")
+        title = title.replace("´", "")
+        title = title.replace("'", "")
+        title = title.replace('"', "")
+        print(title)
         
         trackInfo = {
             "trackId": trackId,
@@ -62,8 +69,8 @@ class DownloadHandler:
             "thumbnail": result["thumbnails"][0]["url"],
             "duration": result["duration"],
             "opusTrackName": trackId+".webm",
-            "title": result["title"],
-            "author": author
+            "title": title,
+            "author": author.name,
         }
         print(trackInfo)
         
@@ -72,10 +79,8 @@ class DownloadHandler:
             print(
                 f"[pytube] Track already downloaded for track ID: {trackId}.\n[server] Sending audio binary for track ID: {trackId}."
             )
-            return trackId+".ogg"
+            return trackInfo
             
-        
-        filename = trackId
         
         YouTube(url).streams.get_by_itag(251).download(filename = trackInfo["trackId"])
         
