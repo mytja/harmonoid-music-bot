@@ -20,28 +20,34 @@ class DownloadHandler:
             print(f"[server] Download request in ID format.")
         if trackName:
             print(f"[server] Download request in name format.")
-            trackId = await self.ytMusic.searchYoutube(trackName, "songs")
-            trackId = trackId[0]["videoId"]
+            result = await self.ytMusic.searchYoutube(trackName, "songs")
+            trackId = result[0]["videoId"]
+            albumId = result[0]["album"]["id"]
+        
+
+        trackInfo = await self.trackInfo(trackId, albumId)
+        print(trackInfo)
+        
         if os.path.isfile(f"{trackId}.ogg"):
             print(
                 f"[pytube] Track already downloaded for track ID: {trackId}.\n[server] Sending audio binary for track ID: {trackId}."
             )
-            return trackId+".ogg"
-
-        trackInfo = await self.trackInfo(trackId, albumId)
+            return trackInfo
+        
+        
         if type(trackInfo) is dict:
             print(
                 f"[ytmusicapi] Successfully retrieved metadata of track ID: {trackId}."
             )
             await self.saveAudio(trackInfo, metadataAdd=True)
             print(f"[server] Sending audio binary for track ID: {trackId}")
-            return trackId+".ogg"
+            return trackInfo
         else:
             print(f"[ytmusicapi] Could not retrieve metadata of track ID: {trackId}.")
             print(f"[server] Sending status code 500 for track ID: {trackId}.")
-            return 500
+            return None
 
-    async def YTdownload(self, trackName, author):
+    async def YTdownload(self, trackName):
         if trackName:
             print(f"[server] Download request in name format.")
             try:
@@ -69,8 +75,7 @@ class DownloadHandler:
             "thumbnail": result["thumbnails"][0]["url"],
             "duration": result["duration"],
             "opusTrackName": trackId+".webm",
-            "title": title,
-            "author": author.name,
+            "title": title
         }
         print(trackInfo)
         

@@ -36,9 +36,13 @@ async def play(ctx, *, arg):
     
     try:
         filename = await harmonoid.trackDownload(trackName = arg, trackId=None, albumId=None)
+        if not filename:
+            await ctx.send("Sorry, but we couldn't retrieve data for track")
+            return
     except Exception as e:
         await ctx.send("Sorry, but there was an Internal Server Error :cry:! Please report it to our maintainers!")
         print(f"[track-download] {e}")
+        return 500
 
     try:
         channel = discord.utils.get(ctx.guild.channels, name="Music")
@@ -58,15 +62,17 @@ async def play(ctx, *, arg):
     vcid = vc_id.index(server_id)
     
     try:
-        vc[vcid].play(discord.FFmpegPCMAudio(filename), after=print('[ffmpeg-player] Successfully summoned FFMPEG player!'))
+        vc[vcid].play(discord.FFmpegPCMAudio(filename["trackId"]+".ogg"), after=lambda e: print('[ffmpeg-player] Successfully summoned FFMPEG player!', e))
     except Exception as e:
         print(f"Failed to summon FFMPEG player - Exception: ", e)
         ctx.send("Failed to summon a player :cry: ! Please report a problem to our maintainers")
     
     if (len(channel.members) == 1):
         await ctx.send("Come and join me in the voice channel")
-    else:
-        await ctx.send("Okay")
+    try:
+        await embedNow(music = filename, ctx = ctx)
+    except Exception as e:
+        print(f"[embed-exception] Exception: {e}")
 
 @bot.command()
 async def play_yt(ctx, *, arg):
@@ -84,7 +90,7 @@ async def play_yt(ctx, *, arg):
         return
     
     try:
-        filename = await harmonoid.YTdownload(trackName = arg, author = ctx.author)
+        filename = await harmonoid.YTdownload(trackName = arg)
     except Exception as e:
         await ctx.send("Sorry, but there was an Internal Server Error! Please report it to our maintainers!")
         print(f"[track-download] {e}")
@@ -117,10 +123,8 @@ async def play_yt(ctx, *, arg):
     
     if (len(channel.members) == 1):
         await ctx.send("Come and join me in the voice channel")
-    else:
-        await ctx.send("Okay")
     try:
-        await embedNow(music = filename, ctx = ctx)
+        await embedNowYT(music = filename, ctx = ctx)
     except Exception as e:
         print(f"[embed-exception] Exception: {e}")
 
@@ -188,18 +192,60 @@ async def refresh(ctx):
     
     await ctx.send("Succesfully refreshed server with ID: "+str(ctx.message.guild.id))
     
-async def embedNow(music, ctx):
-    embed=discord.Embed(title="Now playing :", description=f"**[{music['title']}]({music['url']})**", color=discord.Colour.random())
+async def embedNowYT(music, ctx):
+    embed=discord.Embed(title="Now playing:", description=f"**[{music['title']}]({music['url']})**", color=discord.Colour.random())
     embed.set_thumbnail(url=music["thumbnail"])
-    embed.add_field(name="Requested by :", value=f"`{music['author']}`", inline=True)
-    embed.add_field(name="Duration :", value=f"`{music['duration']}`", inline=True)
+    embed.add_field(name="Requested by:", value=f"`{ctx.author.name}`", inline=True)
+    embed.add_field(name="Duration:", value=f"`{music['duration']}`", inline=True)
+    await ctx.send(embed=embed)
+
+async def embedNow(music, ctx):
+    trackDur = music["trackDuration"]
+    
+    embed=discord.Embed(title="Now playing :", description=f"**[{music['trackName']}]({music['url']})**", color=discord.Colour.random())
+    embed.set_thumbnail(url=music["albumArtHigh"])
+    embed.add_field(name="Requested by :", value=f"`{ctx.author.name}`", inline=True)
+    embed.add_field(name="Duration :", value=f"`{trackDur//60}:{trackDur%60}`", inline=True)
+    
+    embed.add_field(name="Album ID :", value=f"`{music['albumId']}`", inline=True)
+    embed.add_field(name="Album name :", value=f"`{music['albumName']}`", inline=True)
+    embed.add_field(name="Album name :", value=f"`{music['year']}`", inline=True)
+    
+    embed.add_field(name="Artists :", value=f"`{', '.join(music['trackArtistNames'])}`", inline=True)
+    
+    
     await ctx.send(embed=embed)
 
 @bot.command()
 async def lyrics(ctx, *, arg):
     lyrics = await harmonoid.getLyrics(trackName = arg, trackId = None)
     if lyrics["lyricsFound"] == True:
-        await ctx.send(lyrics["lyrics"])
+        lyrics = lyrics["lyrics"]
+        if (len(lyrics) > 1999):
+            await ctx.send("Lyrics are longer than 2000 characters... Please use !lyricsSend to send lyrics in .txt file")
+        else:
+            await ctx.send(lyrics)
+
+@bot.command()
+async def lyricsSend(ctx, *, arg):
+    lyrics = await harmonoid.getLyrics(trackName = arg, trackId = None)
+    trackId = await harmonoid.searchYoutube(keyword = arg, mode="track")
+    print(trackId)
+    trackId = trackId["result"][0]["trackId"]
+    if os.path.isfile(f"{trackId}.txt"):
+        print(
+            f"[lyrics] Lyrics already downloaded for track ID: {trackId}.\n[server] Sending audio binary for track ID: {trackId}."
+        )
+        await ctx.send(file=discord.File(trackId+".txt"))
+        return
+    if lyrics["lyricsFound"] == True:
+        lyrics = lyrics["lyrics"]
+        f = open(trackId+".txt", "w")
+        f.write(lyrics)
+        f.close()
+        await ctx.send(file=discord.File(trackId+".txt"))
+        return
+                
     
 
 

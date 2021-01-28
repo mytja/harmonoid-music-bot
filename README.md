@@ -5,11 +5,12 @@
 
 
 # Commands
-| Command                | What does it do                                                                           |
-|------------------------|-------------------------------------------------------------------------------------------|
-| !play <song name>      | Joins a voice channel called Music, and plays the song from Youtube Music                 |
-| !play_yt <song name>   | Joins a voice channel called Music, and plays the song or video (only audio) from YouTube |
-| !stop                  | Stops playing a song                                                                      |
-| !pause                 | Pauses playing a song                                                                     |
-| !resume                | Resumes playing a song                                                                    |
-| !lyrics <song name>    | Sends lyrics of the song into the chat if he finds them                                   |
+| Command                 | What does it do                                                                           |
+|-------------------------|-------------------------------------------------------------------------------------------|
+| !play <song name>       | Joins a voice channel called Music, and plays the song from Youtube Music                 |
+| !play_yt <song name>    | Joins a voice channel called Music, and plays the song or video (only audio) from YouTube |
+| !stop                   | Stops playing a song                                                                      |
+| !pause                  | Pauses playing a song                                                                     |
+| !resume                 | Resumes playing a song                                                                    |
+| !lyrics <song name>     | Sends lyrics of the song into the chat if he finds them                                   |
+| !lyricsSend <song name> | Sends lyrics of the song into the chat in .txt document if he finds them                  |
