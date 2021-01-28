@@ -9,7 +9,7 @@ import json
 import ytmusicapi
 from pytube import YouTube
 from .async_mutagen import Metadata
-from youtubesearchpython.__future__ import *
+from youtubesearchpython import *
 
 fetcher = StreamURLFetcher()
 
@@ -51,7 +51,6 @@ class DownloadHandler:
             return None
 
     async def YTdownload(self, trackName):
-        await fetcher.getJavaScript()
         if trackName:
             print(f"[server] Download request in name format.")
             try:
@@ -72,8 +71,8 @@ class DownloadHandler:
         title = title.replace('"', "")
         print(title)
         
-        video = await Video.get(url)
-        furl = await fetcher.get(video, 251)
+        video = Video.get(url)
+        furl = fetcher.get(video, 251)
         
         trackInfo = {
             "trackId": trackId,
