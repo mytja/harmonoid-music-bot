@@ -259,5 +259,5 @@ class BrowsingHandler(BrowsingHandlerInternal):
     
     async def searchYT(self, videoName):
         videosSearch = VideosSearch(videoName, limit = 1)
-        videoSearch = await videosSearch.result()
+        videoSearch = await videosSearch.next()
         return videoSearch
