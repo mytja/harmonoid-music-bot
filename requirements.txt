@@ -1,6 +1,6 @@
 git+https://github.com/sigma67/ytmusicapi@master
 git+https://github.com/nficano/pytube@master
-git+https://github.com/alexmercerind/youtube-search-python
+youtube-search-python
 mutagen
 aiofiles
 httpx
