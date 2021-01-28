@@ -9,6 +9,9 @@ import json
 import ytmusicapi
 from pytube import YouTube
 from .async_mutagen import Metadata
+from youtubesearchpython import *
+
+fetcher = StreamURLFetcher()
 
 MUSICAPI_VERSION = ytmusicapi.__version__
 FFMPEG_COMMAND = 'ffmpeg -i {trackId}.webm -vn -c:a copy {trackId}.ogg'
@@ -68,6 +71,9 @@ class DownloadHandler:
         title = title.replace('"', "")
         print(title)
         
+        video = Video.get(url)
+        furl = fetcher.get(video, 251)
+        
         trackInfo = {
             "trackId": trackId,
             "url": url,
@@ -75,7 +81,8 @@ class DownloadHandler:
             "thumbnail": result["thumbnails"][0]["url"],
             "duration": result["duration"],
             "opusTrackName": trackId+".webm",
-            "title": title
+            "title": title,
+            "fURL": furl
         }
         print(trackInfo)
         
@@ -87,39 +94,20 @@ class DownloadHandler:
             return trackInfo
             
         
-        YouTube(url).streams.get_by_itag(251).download(filename = trackInfo["trackId"])
-        
         try:
-            await self.ffmpeg_conv(trackInfo)
+            await self.saveAudio(trackInfo, metadataAdd=False)
         except Exception as e:
-            print(f"[ffmpeg-conv] {e}")
+            print(f"[save-audio] {e}")
 
         print(f"[server] Sending audio binary for track ID: {trackId}")
         return trackInfo
-
-    async def ffmpeg_conv(self, trackInfo):
-        process = subprocess.Popen(
-            FFMPEG_COMMAND.format(trackId=trackInfo["trackId"]),
-            shell=True,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.PIPE,
-        )
-        while process.poll() is None:
-            await asyncio.sleep(0.1)
-        _, stderr = process.communicate()
-        stderr = stderr.decode()
-
-        if process.poll() != 0:
-            print("[stderr]", stderr)
-
-        asyncio.ensure_future(aiofiles.os.remove(f"{trackInfo['trackId']}.webm"))
 
     async def saveAudio(self, trackInfo, metadataAdd):
         filename = f"{trackInfo['trackId']}.webm"
         print(f"[httpx] Downloading track ID: {trackInfo['trackId']}.")
         async with httpx.AsyncClient() as client:
             response = await client.get(
-                trackInfo["url"], timeout=None, headers={"Range": "bytes=0-"}
+                trackInfo["fURL"], timeout=None, headers={"Range": "bytes=0-"}
             )
         if response.status_code in [200, 206]:
             async with aiofiles.open(filename, "wb") as file:
