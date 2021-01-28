@@ -15,6 +15,8 @@ harmonoid = hs.HarmonoidService()
 vc = []
 vc_id = []
 
+error = 0
+
 @bot.event
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
@@ -40,7 +42,11 @@ async def play(ctx, *, arg):
             await ctx.send("Sorry, but we couldn't retrieve data for track")
             return
     except Exception as e:
-        await ctx.send("Sorry, but there was an Internal Server Error :cry:! Please report it to our maintainers!")
+        await ctx.send(f"Sorry, but there was an Internal Server Error :cry:! Please report it to our maintainers! Unique error code: {error}")
+        f = open(error+".txt", "w")
+        f.write(e)
+        f.close()
+        error += 1
         print(f"[track-download] {e}")
         return 500
 
@@ -64,8 +70,16 @@ async def play(ctx, *, arg):
     try:
         vc[vcid].play(discord.FFmpegPCMAudio(filename["trackId"]+".ogg"), after=lambda e: print('[ffmpeg-player] Successfully summoned FFMPEG player!', e))
     except Exception as e:
-        print(f"Failed to summon FFMPEG player - Exception: ", e)
-        ctx.send("Failed to summon a player :cry: ! Please report a problem to our maintainers")
+        try:
+            vc[vcid].stop()
+            vc[vcid].play(discord.FFmpegPCMAudio(filename["trackId"]+".ogg"), after=lambda e: print('[ffmpeg-player] Successfully summoned FFMPEG player!', e))
+        except Exception as e:
+            print(f"Failed to summon FFMPEG player - Exception: ", e)
+            f = open(error+".txt", "w")
+            f.write(e)
+            f.close()
+            error += 1
+            ctx.send(f"Failed to summon a player :cry: ! Please report a problem to our maintainers! Unique error code {error-1}")
     
     if (len(channel.members) == 1):
         await ctx.send("Come and join me in the voice channel")
@@ -83,7 +97,11 @@ async def play_yt(ctx, *, arg):
         await harmonoid.youtube.getJS()
     except Exception as e:
         print(f"Failed to get JS: {e}")
-        await ctx.send("Failed to get JS from player :sad:")
+        f = open(error+".txt", "w")
+        f.write(e)
+        f.close()
+        error += 1
+        await ctx.send(f"Failed to get JS from player :sad: Code to report to maintainers: {error-1}")
     
     
     if ctx.author == bot.user:
@@ -92,7 +110,11 @@ async def play_yt(ctx, *, arg):
     try:
         filename = await harmonoid.YTdownload(trackName = arg)
     except Exception as e:
-        await ctx.send("Sorry, but there was an Internal Server Error! Please report it to our maintainers!")
+        await ctx.send(f"Sorry, but there was an Internal Server Error! Please report it to our maintainers! Unique error ID: {error}")
+        f = open(error+".txt", "w")
+        f.write(e)
+        f.close()
+        error += 1
         print(f"[track-download] {e}")
 
     try:
@@ -118,8 +140,16 @@ async def play_yt(ctx, *, arg):
     try:
         vc[vcid].play(discord.FFmpegPCMAudio(filename["trackId"]+".ogg"), after=lambda e: print('[ffmpeg-player] Successfully summoned FFMPEG player!', e))
     except Exception as e:
-        print(f"Failed to summon FFMPEG player - Exception: ", e)
-        await ctx.send("Failed to summon a player :cry: ! Please report a problem to our maintainers")
+        try:
+            vc[vcid].stop()
+            vc[vcid].play(discord.FFmpegPCMAudio(filename["trackId"]+".ogg"), after=lambda e: print('[ffmpeg-player] Successfully summoned FFMPEG player!', e))
+        except Exception as e:
+            print(f"Failed to summon FFMPEG player - Exception: ", e)
+            f = open(error+".txt", "w")
+            f.write(e)
+            f.close()
+            error += 1
+            ctx.send(f"Failed to summon a player :cry: ! Please report a problem to our maintainers! Unique error code {error-1}")
     
     if (len(channel.members) == 1):
         await ctx.send("Come and join me in the voice channel")
