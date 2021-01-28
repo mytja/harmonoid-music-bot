@@ -5,6 +5,9 @@ import discord
 from discord.ext import commands
 from discord.ext.commands import AutoShardedBot
 import harmonoidservice as hs
+import logging
+
+logging.basicConfig(level=logging.DEBUG, filename='harmonoid-bot.log')
 
 TOKEN = os.environ['DISCORD_TOKEN']
 
@@ -32,6 +35,7 @@ async def on_ready():
 async def play(ctx, *, arg):
     global vc
     global vc_id
+    global error
     
     if ctx.author == bot.user:
         return
@@ -41,11 +45,9 @@ async def play(ctx, *, arg):
         if not filename:
             await ctx.send("Sorry, but we couldn't retrieve data for track")
             return
-    except Exception as e:
-        await ctx.send(f"Sorry, but there was an Internal Server Error :cry:! Please report it to our maintainers! Unique error code: {error}")
-        f = open(error+".txt", "w")
-        f.write(e)
-        f.close()
+    except:
+        await ctx.send(f"Sorry, but there was an Internal Server Error :cry: ! Please report it to our maintainers! Unique error code: {error}")
+        logging.exception("\n\n--------\n\nException number "+str(error)+": ")
         error += 1
         print(f"[track-download] {e}")
         return 500
@@ -56,6 +58,7 @@ async def play(ctx, *, arg):
         channel = bot.get_channel(channel_id)
     except:
         await ctx.send("No voice channel called Music! Please create one!")
+        return 
     
     server_id = ctx.message.guild.id
     
@@ -69,17 +72,16 @@ async def play(ctx, *, arg):
     
     try:
         vc[vcid].play(discord.FFmpegPCMAudio(filename["trackId"]+".ogg"), after=lambda e: print('[ffmpeg-player] Successfully summoned FFMPEG player!', e))
-    except Exception as e:
+    except:
         try:
             vc[vcid].stop()
             vc[vcid].play(discord.FFmpegPCMAudio(filename["trackId"]+".ogg"), after=lambda e: print('[ffmpeg-player] Successfully summoned FFMPEG player!', e))
-        except Exception as e:
+        except:
             print(f"Failed to summon FFMPEG player - Exception: ", e)
-            f = open(error+".txt", "w")
-            f.write(e)
-            f.close()
-            error += 1
+            logging.exception("\n\n--------\n\nException number "+str(error)+": ")
             ctx.send(f"Failed to summon a player :cry: ! Please report a problem to our maintainers! Unique error code {error-1}")
+            error += 1
+            return
     
     if (len(channel.members) == 1):
         await ctx.send("Come and join me in the voice channel")
@@ -87,6 +89,7 @@ async def play(ctx, *, arg):
         await embedNow(music = filename, ctx = ctx)
     except Exception as e:
         print(f"[embed-exception] Exception: {e}")
+        await ctx.send("Failed to summon an embed :sad: ! Well, the song is still playing :wink: ")
 
 @bot.command()
 async def play_yt(ctx, *, arg):
@@ -95,13 +98,11 @@ async def play_yt(ctx, *, arg):
     
     try:
         await harmonoid.youtube.getJS()
-    except Exception as e:
+    except:
         print(f"Failed to get JS: {e}")
-        f = open(error+".txt", "w")
-        f.write(e)
-        f.close()
+        logging.exception("\n\n--------\n\nException number "+str(error)+": ")
         error += 1
-        await ctx.send(f"Failed to get JS from player :sad: Code to report to maintainers: {error-1}")
+        await ctx.send(f"Failed to get JS from player :sad: ! Trying to continue! Code to report to maintainers: {error-1}")
     
     
     if ctx.author == bot.user:
@@ -109,13 +110,12 @@ async def play_yt(ctx, *, arg):
     
     try:
         filename = await harmonoid.YTdownload(trackName = arg)
-    except Exception as e:
+    except:
         await ctx.send(f"Sorry, but there was an Internal Server Error! Please report it to our maintainers! Unique error ID: {error}")
-        f = open(error+".txt", "w")
-        f.write(e)
-        f.close()
+        logging.exception("\n\n--------\n\nException number "+str(error)+": ")
         error += 1
         print(f"[track-download] {e}")
+        return 
 
     try:
         channel = discord.utils.get(ctx.guild.channels, name="Music")
@@ -123,6 +123,7 @@ async def play_yt(ctx, *, arg):
         channel = bot.get_channel(channel_id)
     except:
         await ctx.send("No voice channel called Music! Please create one!")
+        return 
     
     server_id = ctx.message.guild.id
     
@@ -133,23 +134,23 @@ async def play_yt(ctx, *, arg):
             vc.append(vc1)
             vc_id.append(server_id)
         except:
-            await ctx.send("Failed to join a voice channel :cry:! Our developers would have to reboot the server now! Please try to use command !refresh")
+            await ctx.send("Failed to join a voice channel :cry: ! Our developers would have to reboot the server now! Please try to use command !refresh")
+            return 
     
     vcid = vc_id.index(server_id)
     
     try:
         vc[vcid].play(discord.FFmpegPCMAudio(filename["trackId"]+".ogg"), after=lambda e: print('[ffmpeg-player] Successfully summoned FFMPEG player!', e))
-    except Exception as e:
+    except:
         try:
             vc[vcid].stop()
             vc[vcid].play(discord.FFmpegPCMAudio(filename["trackId"]+".ogg"), after=lambda e: print('[ffmpeg-player] Successfully summoned FFMPEG player!', e))
-        except Exception as e:
+        except:
             print(f"Failed to summon FFMPEG player - Exception: ", e)
-            f = open(error+".txt", "w")
-            f.write(e)
-            f.close()
+            logging.exception("\n\n--------\n\nException number "+str(error)+": ")
             error += 1
             ctx.send(f"Failed to summon a player :cry: ! Please report a problem to our maintainers! Unique error code {error-1}")
+            return 
     
     if (len(channel.members) == 1):
         await ctx.send("Come and join me in the voice channel")
@@ -157,6 +158,7 @@ async def play_yt(ctx, *, arg):
         await embedNowYT(music = filename, ctx = ctx)
     except Exception as e:
         print(f"[embed-exception] Exception: {e}")
+        await ctx.send("Failed to summon an embed :sad: ! But the song is still playing :wink: ")
 
 @bot.command()
 async def stop(ctx):
