@@ -241,7 +241,7 @@ async def embedNow(music, ctx):
     
     embed.add_field(name="Album ID :", value=f"`{music['albumId']}`", inline=True)
     embed.add_field(name="Album name :", value=f"`{music['albumName']}`", inline=True)
-    embed.add_field(name="Album name :", value=f"`{music['year']}`", inline=True)
+    embed.add_field(name="Year :", value=f"`{music['year']}`", inline=True)
     
     embed.add_field(name="Artists :", value=f"`{', '.join(music['trackArtistNames'])}`", inline=True)
     
