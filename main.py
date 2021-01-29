@@ -233,13 +233,13 @@ async def embedNowYT(music, ctx):
 
 async def embedNow(music, ctx):
     trackDur = music["trackDuration"]
-    
-    embed=discord.Embed(title="Now playing :", description=f"**[{music['trackName']}]({music['url']})**", color=discord.Colour.random())
+    url = "https://music.youtube.com/watch?v="+music["trackId"]
+                    
+    embed=discord.Embed(title="Now playing :", description=f"**[{music['trackName']}]({url})**", color=discord.Colour.random())
     embed.set_thumbnail(url=music["albumArtHigh"])
     embed.add_field(name="Requested by :", value=f"`{ctx.author.name}`", inline=True)
     embed.add_field(name="Duration :", value=f"`{trackDur//60}:{trackDur%60}`", inline=True)
     
-    embed.add_field(name="Album ID :", value=f"`{music['albumId']}`", inline=True)
     embed.add_field(name="Album name :", value=f"`{music['albumName']}`", inline=True)
     embed.add_field(name="Year :", value=f"`{music['year']}`", inline=True)
     
