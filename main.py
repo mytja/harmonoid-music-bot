@@ -23,6 +23,7 @@ error = 0
 @bot.event
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
+    client.loop.create_task(disconnectOnEmptyChannel())
 
 #@bot.command()
 #async def download(ctx, *, arg):
@@ -283,15 +284,41 @@ async def disconnect(ctx):
     vcid = vc_id.index(ctx.message.guild.id)
     
     try:
-        vc[vcid].stop()
+        await vc[vcid].stop()
     except:
         logging.exception("\n\n--------\n\[stop] Disconnect exception: ")
                     
     try:
-        vc[vcid].disconnect()
+        await vc[vcid].disconnect()
     except:
         logging.exception("\n\n--------\n\[disconnect] Disconnect exception: ")
+        return 
+    
+    del vc_id[vcid]
+    del vc[vcid]
+    
+    await ctx.send("Successfully disconnected from a voice channel :smiley: ")
                     
-
+async def disconnectOnEmptyChannel():
+    global vc
+    global vc_id
+    
+    await bot.wait_until_ready() # ensures cache is loaded
+    for voice_id in vc_id:
+        vcid = vc_id.index(voice_id)
+        channel = client.get_channel(id=voice_id) # replace with target channel id
+        if (len(channel.members) < 2):
+            try:
+                await vc[vcid].stop()
+            except:
+                print("Nothing is playing")
+            try:
+                await vc[vcid].disconnect()
+            except:
+                print("Failed to disconnect")
+        del vc_id[vcid]
+        del vc[vcid]
+    while not bot.is_closed():
+        await asyncio.sleep(600) # Do it every 10 minutes
 
 bot.run(TOKEN)
