@@ -105,9 +105,16 @@ class DownloadHandler:
     async def saveAudio(self, trackInfo, metadataAdd):
         filename = f"{trackInfo['trackId']}.webm"
         print(f"[httpx] Downloading track ID: {trackInfo['trackId']}.")
+        try:
+            print("[save-audio] Recognized a YouTube download")
+            url = trackInfo["fURL"]
+        except:
+            print("[save-audio] Recognized a YouTube Music download")
+            url = trackInfo["url"]
+            
         async with httpx.AsyncClient() as client:
             response = await client.get(
-                trackInfo["fURL"], timeout=None, headers={"Range": "bytes=0-"}
+                url, timeout=None, headers={"Range": "bytes=0-"}
             )
         if response.status_code in [200, 206]:
             async with aiofiles.open(filename, "wb") as file:
