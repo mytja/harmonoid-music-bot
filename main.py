@@ -57,7 +57,7 @@ async def play(ctx, *, arg):
         channel_id = channel.id
         channel = bot.get_channel(channel_id)
     except:
-        await ctx.send("No voice channel called Music! Please create one!")
+        await ctx.send("No voice channel called Music. Please create one.")
         return 
     
     server_id = ctx.message.guild.id
@@ -79,7 +79,7 @@ async def play(ctx, *, arg):
         except:
             print(f"Failed to summon FFMPEG player - Exception: ", e)
             logging.exception("\n\n--------\n\nException number "+str(error)+": ")
-            ctx.send(f"Failed to summon a player :cry: ! Please report a problem to our maintainers! Unique error code {error-1}")
+            ctx.send(f"Failed to summon a player :cry: ... Please report a problem to our maintainers. Unique error code {error-1}")
             error += 1
             return
     
@@ -89,10 +89,10 @@ async def play(ctx, *, arg):
         await embedNow(music = filename, ctx = ctx)
     except Exception as e:
         print(f"[embed-exception] Exception: {e}")
-        await ctx.send("Failed to summon an embed :sad: ! Well, the song is still playing :wink: ")
+        await ctx.send("Failed to summon an embed :sad: ... Well, the song is still playing :wink: ")
 
 @bot.command()
-async def play_yt(ctx, *, arg):
+async def playYT(ctx, *, arg):
     global vc
     global vc_id
     
@@ -102,7 +102,7 @@ async def play_yt(ctx, *, arg):
         print(f"Failed to get JS: {e}")
         logging.exception("\n\n--------\n\nException number "+str(error)+": ")
         error += 1
-        await ctx.send(f"Failed to get JS from player :sad: ! Trying to continue! Code to report to maintainers: {error-1}")
+        await ctx.send(f"Failed to get JavaScript from a player :sad: . Trying to continue. Code to report to maintainers: {error-1}")
     
     
     if ctx.author == bot.user:
@@ -111,7 +111,7 @@ async def play_yt(ctx, *, arg):
     try:
         filename = await harmonoid.YTdownload(trackName = arg)
     except:
-        await ctx.send(f"Sorry, but there was an Internal Server Error! Please report it to our maintainers! Unique error ID: {error}")
+        await ctx.send(f"Sorry, but there was an Internal Server Error. Please report it to our maintainers. Unique error ID: {error}")
         logging.exception("\n\n--------\n\nException number "+str(error)+": ")
         error += 1
         print(f"[track-download] {e}")
@@ -122,7 +122,7 @@ async def play_yt(ctx, *, arg):
         channel_id = channel.id
         channel = bot.get_channel(channel_id)
     except:
-        await ctx.send("No voice channel called Music! Please create one!")
+        await ctx.send("No voice channel called Music... Please create one.")
         return 
     
     server_id = ctx.message.guild.id
@@ -134,7 +134,7 @@ async def play_yt(ctx, *, arg):
             vc.append(vc1)
             vc_id.append(server_id)
         except:
-            await ctx.send("Failed to join a voice channel :cry: ! Our developers would have to reboot the server now! Please try to use command !refresh")
+            await ctx.send("Failed to join a voice channel :cry: . Our developers would have to reboot the server now... Server Administrators, please try to disconnect bot from a voice channel, and then use command !refresh")
             return 
     
     vcid = vc_id.index(server_id)
@@ -149,7 +149,7 @@ async def play_yt(ctx, *, arg):
             print(f"Failed to summon FFMPEG player - Exception: ", e)
             logging.exception("\n\n--------\n\nException number "+str(error)+": ")
             error += 1
-            ctx.send(f"Failed to summon a player :cry: ! Please report a problem to our maintainers! Unique error code {error-1}")
+            ctx.send(f"Failed to summon a player :cry: ... Please report a problem to our maintainers. Unique error code {error-1}")
             return 
     
     if (len(channel.members) == 1):
@@ -158,7 +158,7 @@ async def play_yt(ctx, *, arg):
         await embedNowYT(music = filename, ctx = ctx)
     except Exception as e:
         print(f"[embed-exception] Exception: {e}")
-        await ctx.send("Failed to summon an embed :sad: ! But the song is still playing :wink: ")
+        await ctx.send("Failed to summon an embed :sad: . But the song is still playing :wink: ")
 
 @bot.command()
 async def stop(ctx):
@@ -169,7 +169,7 @@ async def stop(ctx):
             vc[vcid].stop()
             await ctx.send("Okay")
         else:
-            await ctx.send("Cannot stop! No song is playing!")
+            await ctx.send("Cannot stop! No song is playing.")
 
 @bot.command()
 async def pause(ctx):
@@ -180,7 +180,7 @@ async def pause(ctx):
             vc[vcid].pause()
             await ctx.send("Okay")
         else:
-            await ctx.send("Cannot pause! No song is playing!")
+            await ctx.send("Cannot pause! No song is playing.")
 
 @bot.command()
 async def resume(ctx):
@@ -272,13 +272,26 @@ async def lyricsSend(ctx, *, arg):
         return
     if lyrics["lyricsFound"] == True:
         lyrics = lyrics["lyrics"]
-        f = open(trackId+".txt", "w")
-        f.write(lyrics)
-        f.close()
+        logging.exception("\n\n--------\n\nLyrics exception: ")
         await ctx.send(file=discord.File(trackId+".txt"))
         return
                 
+@bot.command()
+async def disconnect(ctx):
+    global vc
+    global vc_id
+    vcid = vc_id.index(ctx.message.guild.id)
     
+    try:
+        vc[vcid].stop()
+    except:
+        logging.exception("\n\n--------\n\[stop] Disconnect exception: ")
+                    
+    try:
+        vc[vcid].disconnect()
+    except:
+        logging.exception("\n\n--------\n\[disconnect] Disconnect exception: ")
+                    
 
 
 bot.run(TOKEN)
