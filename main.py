@@ -6,7 +6,7 @@ from discord.ext import commands
 from discord.ext.commands import AutoShardedBot
 import harmonoidservice as hs
 import logging
-import harmonoidbot as hb
+from harmonoidbot import *
 
 logging.basicConfig(level=logging.DEBUG, filename='harmonoid-bot.log')
 
@@ -228,6 +228,7 @@ async def refresh(ctx):
 
 @bot.command()
 async def about(ctx):
+    await embedAbout(ctx)
 
 @bot.command()
 async def lyrics(ctx, *, arg):

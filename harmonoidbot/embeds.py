@@ -22,7 +22,7 @@ async def embedNow(music, ctx):
     
     await ctx.send(embed=embed)
 
-async def embedAbout(music, ctx):
+async def embedAbout(ctx):
     about = """
     Hello! :wave: \n
     I'm Harmonoid Bot. \n
@@ -35,10 +35,16 @@ async def embedAbout(music, ctx):
     You won't regret it :wink: ! \n
     - harmonoid Team
     """
+
+    version = "Beta 1.0.0"
+
+    maintainers = "mytja, alexmercerind, raitonoberu"
                     
     embed=discord.Embed(title="About :", description=f"**About harmonoid-bot**", color=discord.Colour.random())
     embed.set_thumbnail(url="https://avatars.githubusercontent.com/u/75374037?s=200&v=4")
     embed.add_field(name="", value=f"{about}", inline=False)
+    embed.add_field(name="Version: ", value=f"{version}", inline=True)
+    embed.add_field(name="Maintainers: ", value=f"{maintainers}", inline=True)
     
     
     await ctx.send(embed=embed)
