@@ -6,6 +6,7 @@ from discord.ext import commands
 from discord.ext.commands import AutoShardedBot
 import harmonoidservice as hs
 import logging
+import harmonoidbot as hb
 
 logging.basicConfig(level=logging.DEBUG, filename='harmonoid-bot.log')
 
@@ -32,7 +33,7 @@ async def on_ready():
 #
 #    await ctx.message.channel.send(file = discord.File(fp = await harmonoid.trackDownload(trackName = arg, trackId=None, albumId=None)))
 
-@bot.command()
+@bot.command(aliases=['play', 'p'])
 async def play(ctx, *, arg):
     global vc
     global vc_id
@@ -92,7 +93,7 @@ async def play(ctx, *, arg):
         print(f"[embed-exception] Exception: {e}")
         await ctx.send("Failed to summon an embed :sad: ... Well, the song is still playing :wink: ")
 
-@bot.command()
+@bot.command(aliases=['playYT', 'play_yt', 'py'])
 async def playYT(ctx, *, arg):
     global vc
     global vc_id
@@ -161,7 +162,7 @@ async def playYT(ctx, *, arg):
         print(f"[embed-exception] Exception: {e}")
         await ctx.send("Failed to summon an embed :sad: . But the song is still playing :wink: ")
 
-@bot.command()
+@bot.command(aliases=['stop', 's'])
 async def stop(ctx):
     server_id = ctx.message.guild.id
     vcid = vc_id.index(server_id)
@@ -183,7 +184,7 @@ async def pause(ctx):
         else:
             await ctx.send("Cannot pause! No song is playing.")
 
-@bot.command()
+@bot.command(aliases=['resume', 'r'])
 async def resume(ctx):
     server_id = ctx.message.guild.id
     vcid = vc_id.index(server_id)
@@ -224,30 +225,9 @@ async def refresh(ctx):
         print("Server wasn't in list of servers, so it can't be refreshed!")
     
     await ctx.send("Succesfully refreshed server with ID: "+str(ctx.message.guild.id))
-    
-async def embedNowYT(music, ctx):
-    embed=discord.Embed(title="Now playing:", description=f"**[{music['title']}]({music['url']})**", color=discord.Colour.random())
-    embed.set_thumbnail(url=music["thumbnail"])
-    embed.add_field(name="Requested by:", value=f"`{ctx.author.name}`", inline=True)
-    embed.add_field(name="Duration:", value=f"`{music['duration']}`", inline=True)
-    await ctx.send(embed=embed)
 
-async def embedNow(music, ctx):
-    trackDur = music["trackDuration"]
-    url = "https://music.youtube.com/watch?v="+music["trackId"]
-                    
-    embed=discord.Embed(title="Now playing :", description=f"**[{music['trackName']}]({url})**", color=discord.Colour.random())
-    embed.set_thumbnail(url=music["albumArtHigh"])
-    embed.add_field(name="Requested by :", value=f"`{ctx.author.name}`", inline=True)
-    embed.add_field(name="Duration :", value=f"`{trackDur//60}:{trackDur%60}`", inline=True)
-    
-    embed.add_field(name="Album name :", value=f"`{music['albumName']}`", inline=True)
-    embed.add_field(name="Year :", value=f"`{music['year']}`", inline=True)
-    
-    embed.add_field(name="Artists :", value=f"`{', '.join(music['trackArtistNames'])}`", inline=True)
-    
-    
-    await ctx.send(embed=embed)
+@bot.command()
+async def about(ctx):
 
 @bot.command()
 async def lyrics(ctx, *, arg):
@@ -270,12 +250,10 @@ async def lyricsSend(ctx, *, arg):
             f"[lyrics] Lyrics already downloaded for track ID: {trackId}.\n[server] Sending audio binary for track ID: {trackId}."
         )
         await ctx.send(file=discord.File(trackId+".txt"))
-        return
-    if lyrics["lyricsFound"] == True:
+    elif lyrics["lyricsFound"] == True:
         lyrics = lyrics["lyrics"]
         logging.exception("\n\n--------\n\nLyrics exception: ")
         await ctx.send(file=discord.File(trackId+".txt"))
-        return
                 
 @bot.command()
 async def disconnect(ctx):
