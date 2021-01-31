@@ -24,7 +24,7 @@ error = 0
 @bot.event
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
-    client.loop.create_task(disconnectOnEmptyChannel())
+    bot.loop.create_task(disconnectOnEmptyChannel())
 
 #@bot.command()
 #async def download(ctx, *, arg):
