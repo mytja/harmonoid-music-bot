@@ -24,7 +24,10 @@ error = 0
 @bot.event
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
-    bot.loop.create_task(disconnectOnEmptyChannel())
+    try:
+        bot.loop.create_task(disconnectOnEmptyChannel())
+    except:
+        logging.exception("\n\n--------\n\Disconnect on empty channel error: ")
 
 #@bot.command()
 #async def download(ctx, *, arg):
@@ -33,7 +36,7 @@ async def on_ready():
 #
 #    await ctx.message.channel.send(file = discord.File(fp = await harmonoid.trackDownload(trackName = arg, trackId=None, albumId=None)))
 
-@bot.command(aliases=['play', 'p'])
+@bot.command(aliases=['p'])
 async def play(ctx, *, arg):
     global vc
     global vc_id
@@ -93,7 +96,7 @@ async def play(ctx, *, arg):
         print(f"[embed-exception] Exception: {e}")
         await ctx.send("Failed to summon an embed :sad: ... Well, the song is still playing :wink: ")
 
-@bot.command(aliases=['playYT', 'play_yt', 'py'])
+@bot.command(aliases=['play_yt', 'py'])
 async def playYT(ctx, *, arg):
     global vc
     global vc_id
@@ -162,7 +165,7 @@ async def playYT(ctx, *, arg):
         print(f"[embed-exception] Exception: {e}")
         await ctx.send("Failed to summon an embed :sad: . But the song is still playing :wink: ")
 
-@bot.command(aliases=['stop', 's'])
+@bot.command(aliases=['s'])
 async def stop(ctx):
     server_id = ctx.message.guild.id
     vcid = vc_id.index(server_id)
@@ -184,7 +187,7 @@ async def pause(ctx):
         else:
             await ctx.send("Cannot pause! No song is playing.")
 
-@bot.command(aliases=['resume', 'r'])
+@bot.command(aliases=['r'])
 async def resume(ctx):
     server_id = ctx.message.guild.id
     vcid = vc_id.index(server_id)
