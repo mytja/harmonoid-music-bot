@@ -1,3 +1,5 @@
+import discord
+
 async def embedNowYT(music, ctx):
     embed=discord.Embed(title="Now playing:", description=f"**[{music['title']}]({music['url']})**", color=discord.Colour.random())
     embed.set_thumbnail(url=music["thumbnail"])
