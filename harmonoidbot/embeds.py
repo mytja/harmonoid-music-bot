@@ -1,28 +1,47 @@
 import discord
+from . import utils
+
 
 async def embedNowYT(music, ctx):
-    embed=discord.Embed(title="Now playing:", description=f"**[{music['title']}]({music['url']})**", color=discord.Colour.random())
+    embed = discord.Embed(
+        title="Now playing:",
+        description=f"**[{music['title']}]({music['url']})**",
+        color=discord.Colour.random(),
+    )
     embed.set_thumbnail(url=music["thumbnail"])
     embed.add_field(name="Requested by:", value=f"`{ctx.author.name}`", inline=True)
-    embed.add_field(name="Duration:", value=f"`{music['duration']}`", inline=True)
+    embed.add_field(
+        name="Duration:",
+        value=f"`{utils.format_duration_yt(music['duration'])}`",
+        inline=True,
+    )
     await ctx.send(embed=embed)
+
 
 async def embedNow(music, ctx):
     trackDur = music["trackDuration"]
-    url = "https://music.youtube.com/watch?v="+music["trackId"]
-                    
-    embed=discord.Embed(title="Now playing :", description=f"**[{music['trackName']}]({url})**", color=discord.Colour.random())
+    url = "https://music.youtube.com/watch?v=" + music["trackId"]
+
+    embed = discord.Embed(
+        title="Now playing :",
+        description=f"**[{music['trackName']}]({url})**",
+        color=discord.Colour.random(),
+    )
     embed.set_thumbnail(url=music["albumArtHigh"])
     embed.add_field(name="Requested by :", value=f"`{ctx.author.name}`", inline=True)
-    embed.add_field(name="Duration :", value=f"`{trackDur//60}:{trackDur%60}`", inline=True)
-    
+    embed.add_field(
+        name="Duration :", value=f"`{utils.format_duration(trackDur)}`", inline=True
+    )
+
     embed.add_field(name="Album name :", value=f"`{music['albumName']}`", inline=True)
     embed.add_field(name="Year :", value=f"`{music['year']}`", inline=True)
-    
-    embed.add_field(name="Artists :", value=f"`{', '.join(music['trackArtistNames'])}`", inline=True)
-    
-    
+
+    embed.add_field(
+        name="Artists :", value=f"`{', '.join(music['trackArtistNames'])}`", inline=True
+    )
+
     await ctx.send(embed=embed)
+
 
 async def embedAbout(ctx):
     about = """
@@ -41,12 +60,17 @@ async def embedAbout(ctx):
     version = "Beta 1.0.0"
 
     maintainers = "mytja, alexmercerind, raitonoberu"
-                    
-    embed=discord.Embed(title="About :", description=f"**About harmonoid-bot**", color=discord.Colour.random())
-    embed.set_thumbnail(url="https://avatars.githubusercontent.com/u/75374037?s=200&v=4")
+
+    embed = discord.Embed(
+        title="About :",
+        description=f"**About harmonoid-bot**",
+        color=discord.Colour.random(),
+    )
+    embed.set_thumbnail(
+        url="https://avatars.githubusercontent.com/u/75374037?s=200&v=4"
+    )
     embed.add_field(name="", value=f"{about}", inline=False)
     embed.add_field(name="Version: ", value=f"{version}", inline=True)
     embed.add_field(name="Maintainers: ", value=f"{maintainers}", inline=True)
-    
-    
+
     await ctx.send(embed=embed)
