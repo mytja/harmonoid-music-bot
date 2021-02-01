@@ -15,9 +15,13 @@
 | !lyrics <song name>     |                | Sends lyrics of the song into the chat if he finds them                                   |
 | !lyricsSend <song name> |                | Sends lyrics of the song into the chat in .txt document if he finds them                  |
 | !disconnect             |                | Disconnects from a voice channel                                                          |
+| !about                  |                | Send about embed into chat                                                                |
 
 # Commands in beta
-Currently none...
+- !about
 
 # Features in beta
-- Auto-disconnect from voice channel if it is IDLE. He checks that every 10 minutes. Please report, if it breaks playing
+Currently none
+
+# News
+We removed auto-disconnect, since during testing, it crashed a server
