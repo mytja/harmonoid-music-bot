@@ -199,10 +199,6 @@ async def playYT(ctx, *, arg):
             "Failed to summon an embed :sad: . But the song is still playing :wink: "
         )
 
-@bot.command()
-async def about(ctx):
-    await embedAbout(ctx)
-        
 @bot.command(aliases=["s"])
 async def stop(ctx):
     server_id = ctx.message.guild.id
