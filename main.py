@@ -127,6 +127,7 @@ async def playYT(ctx, *, arg):
         print(f"Failed to get JS: {e}")
         logging.exception("\n\n--------\n\nException number " + str(error) + ": ")
         error += 1
+
         await ctx.send(
             f"Failed to get JavaScript from a player :sad: . Trying to continue. Code to report to maintainers: {error-1}"
         )
@@ -198,7 +199,10 @@ async def playYT(ctx, *, arg):
             "Failed to summon an embed :sad: . But the song is still playing :wink: "
         )
 
-
+@bot.command()
+async def about(ctx):
+    await embedAbout(ctx)
+        
 @bot.command(aliases=["s"])
 async def stop(ctx):
     server_id = ctx.message.guild.id
