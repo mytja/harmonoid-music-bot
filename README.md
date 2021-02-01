@@ -23,5 +23,17 @@
 # Features in beta
 Currently none
 
+# :heart: Special thanks to this people & organisations
+- [harmonoid](https://github.com/harmonoid) for [harmonoid-service](https://github.com/harmonoid/harmonoid-service)
+- [sigmatics](https://github.com/sigma67) for [ytmusicapi](https://github.com/sigma67/ytmusicapi)
+- [PyTube](https://github.com/pytube) for [PyTube](https://github.com/pytube/pytube)
+- [Quod Libet](https://github.com/quodlibet) for [mutagen](https://github.com/quodlibet/mutagen)
+- [Encode](https://github.com/encode) for [httpx](https://github.com/encode/httpx)
+- [Tin Tvrtković](https://github.com/Tinche) for [aiofiles](https://github.com/Tinche/aiofiles)
+- [alexmercerind](https://github.com/alexmercerind) for [youtube-search-python](https://github.com/alexmercerind/youtube-search-python)
+- [Danny](https://github.com/Rapptz) for [discord.py](https://github.com/Rapptz/discord.py)
+
+<!--
 # News
 We removed auto-disconnect, since during testing, it crashed a server
+-->
