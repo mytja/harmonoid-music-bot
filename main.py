@@ -24,10 +24,10 @@ error = 0
 @bot.event
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
-    try:
-        bot.loop.create_task(disconnectOnEmptyChannel())
-    except:
-        logging.exception("\n\n--------\n\Disconnect on empty channel error: ")
+    #try:
+        #bot.loop.create_task(disconnectOnEmptyChannel())
+    #except:
+        #logging.exception("\n\n--------\n\Disconnect on empty channel error: ")
 
 #@bot.command()
 #async def download(ctx, *, arg):
