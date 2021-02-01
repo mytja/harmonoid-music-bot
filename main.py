@@ -109,8 +109,37 @@ async def playYT(ctx, *, arg):
         error += 1
         await ctx.send(f"Failed to get JavaScript from a player :sad: . Trying to continue. Code to report to maintainers: {error-1}")
     
+    """
+    try:
+        result = await harmonoid.searchYT(videoName = arg)
+        result = result["result"][0]
+        time1 = result["duration"]
+        time = time1.split(":")
+        if (len(time) == 3):
+            time = 10
+        print(time)
+        if (int(time) > 9):
+            trackInfo = {
+                "url": "https://youtube.com/watch?v="+result["id"],
+                "thumbnail": result["thumbnails"][0]["url"],
+                "duration": time1,
+                "title": result["title"],
+                "author": ctx.author
+            }
+            embed = await reallyDownloadEmbed(trackInfo)
+            await ctx.send("Do you really want to download this song? (y/n)", embed = embed)
+            msg = await bot.wait_for('message', check=check(), timeout=30)
+            if (msg == True):
+                await ctx.send("Okay!")
+            else:
+                await ctx.send("Aborting!")
+                return 
+
+    except Exception as e:
+        print(e)
+    """
     
-    if ctx.author == bot.user:
+    if (ctx.author == bot.user):
         return
     
     try:
@@ -302,5 +331,24 @@ async def disconnectOnEmptyChannel():
         del vc[vcid]
     while not bot.is_closed():
         await asyncio.sleep(600) # Do it every 10 minutes
+
+"""
+def check(content):
+    print("Checking")
+        #if message.author != author:
+        #    print("Author False")
+        #    return False
+    try: 
+        if (message.content=="y"): 
+            return True
+        elif (message.content == "n"):
+            return False
+            #else:
+            #    return False
+    except ValueError: 
+        return False
+    except Exception as e:
+        print(f"Check exception {e}")
+"""
 
 bot.run(TOKEN)
