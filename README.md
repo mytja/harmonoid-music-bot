@@ -21,7 +21,7 @@
 - !about
 
 # Features in beta
-Currently none
+- Changing status according to song which is playing
 
 # :heart: Special thanks to this people & organisations
 - [harmonoid](https://github.com/harmonoid) for [harmonoid-service](https://github.com/harmonoid/harmonoid-service)
