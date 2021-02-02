@@ -109,7 +109,7 @@ class Playing:
                 "Failed to summon an embed :sad: ... Well, the song is still playing :wink: "
             )
         
-        await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=filename["trackName"]))
+        #await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=filename["trackName"]))
 
 
     @bot.command(aliases=["play_yt", "py"])
@@ -195,7 +195,7 @@ class Playing:
                 "Failed to summon an embed :sad: . But the song is still playing :wink: "
             )
         
-        await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=filename["title"]))
+        #await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=filename["title"]))
 
 # @bot.command()
 # async def download(ctx, *, arg):
@@ -219,7 +219,7 @@ class PlayingUtils:
             else:
                 await ctx.send("Cannot stop! No song is playing.")
         
-        await bot.change_presence(activity=None)
+        #await bot.change_presence(activity=None)
 
 
     @bot.command()
@@ -376,7 +376,7 @@ async def disconnectOnEmptyChannel():
                     del tc_id[vcid]
                     del vc_id[vcid]
                     del vc[vcid]
-                    await bot.change_presence(status=discord.Status.idle)
+                    #await bot.change_presence(status=discord.Status.idle)
         except Exception as e:
             print(e)
         await asyncio.sleep(600)  # Do it every 10 minutes
