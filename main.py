@@ -38,8 +38,8 @@ error = 0
 @bot.event
 async def on_ready():
     print(f"{bot.user.name} has connected to Discord!")
-    asyncio.ensure_future(disconnectOnEmptyChannel(), loop=bot.loop)
     asyncio.ensure_future(playNext(), loop=bot.loop)
+    asyncio.ensure_future(disconnectOnEmptyChannel(), loop=bot.loop)
 
 class Playing:
     def __init__(self, bot):
@@ -267,7 +267,7 @@ class QueueManagment:
             y = {server_id:[]}
             queueList.update(y)
         queueList[server_id].append(result["title"])
-        queuePos = len(queueList) + 1
+        queuePos = len(queueList)
         #queue = queue.append(result["title"])
         #queueList[server_id] = queue
         print(queueList)
@@ -457,13 +457,6 @@ async def playNext():
     global queueList
 
     while True:
-
-        print("Queue checking!")
-        print(f"[voice-channel] {vc}")
-        print(f"[voice-id] {vc_id}")
-        print(f"[text-channel] {tc_id}")
-        print(f"[serverId] {sr_id}")
-        print(f"[queue-list] {queueList}")
         try:
             for voice_id in vc_id:
                 vcid = vc_id.index(voice_id)
@@ -471,6 +464,15 @@ async def playNext():
                 channel = bot.get_channel(id=voice_id)
                 tchannel = bot.get_channel(int(tc_id[vcid]))
                 serverId = sr_id[vcid]
+
+                print("Queue checking!")
+                print(f"[voice-channel] {vc}")
+                print(f"[voice-id] {vc_id}")
+                print(f"[text-channel] {tc_id}")
+                print(f"[serverId] {sr_id}")
+                print(f"[queue-list] {queueList}")
+                print(f"[is-playing] {vc[vcid].isPlaying()}")
+
                 if vc[vcid].isPlaying():
                     print("Skipping, since it still is playing!")
                 else:
