@@ -18,6 +18,7 @@ harmonoid = hs.HarmonoidService()
 vc = []
 tc_id = []
 vc_id = []
+sr_id = []
 
 """
 JSON for queue should look something like this:
@@ -27,7 +28,7 @@ JSON for queue should look something like this:
     <server_id>: ["Birds - Imagine Drangons", "Faded - Alan Walker"...],
 }
 
-Everything should be queried from YouTube
+Everything should be queried from YouTube (not YouTube Music)
 """
 
 queueList = {}
@@ -38,6 +39,7 @@ error = 0
 async def on_ready():
     print(f"{bot.user.name} has connected to Discord!")
     asyncio.ensure_future(disconnectOnEmptyChannel(), loop=bot.loop)
+    asyncio.ensure_future(playNext(), loop=bot.loop)
 
 class Playing:
     def __init__(self, bot):
@@ -48,6 +50,9 @@ class Playing:
         global vc
         global vc_id
         global error
+        global sr_id
+
+        server_id = ctx.message.guild.id
 
         if ctx.author == bot.user:
             return
@@ -84,6 +89,7 @@ class Playing:
             vc.append(vc1)
             tc_id.append(chat_id)
             vc_id.append(channel_id)
+            sr_id.append(server_id)
 
         vcid = vc_id.index(channel_id)
 
@@ -129,6 +135,9 @@ class Playing:
     async def playYT(ctx, *, arg):
         global vc
         global vc_id
+        global sr_id
+
+        server_id = ctx.message.guild.id
 
         try:
             await harmonoid.youtube.getJS()
@@ -140,8 +149,8 @@ class Playing:
             await ctx.send(
                 f"Failed to get JavaScript from a player :sad: . Trying to continue. Code to report to maintainers: {error-1}"
             )
-        if ctx.author == bot.user:
-            return
+        #if ctx.author == bot.user:
+        #    return
 
         try:
             filename = await harmonoid.YTdownload(trackName=arg)
@@ -170,6 +179,7 @@ class Playing:
             vc.append(vc1)
             tc_id.append(chat_id)
             vc_id.append(channel_id)
+            sr_id.append(server_id)
 
         vcid = vc_id.index(channel_id)
 
@@ -239,11 +249,11 @@ class QueueManagment:
         index = 0
         for qu in q:
             index += 1
-            msg = msg + "\n " + str(index) + ". " + qu
+            msg = msg + "\n" + str(index) + ". " + qu
         
         await ctx.send(msg)
     
-    @bot.command(aliases=["pq"])
+    @bot.command(aliases=["pq", "dp", "pd", "add"])
     async def playQueue(ctx, *, arg):
         global queueList
         result = await harmonoid.searchYT(arg)
@@ -256,11 +266,11 @@ class QueueManagment:
             #z = json.loads(queueList)
             y = {server_id:[]}
             queueList.update(y)
-        queue = queueList[server_id]
+        queueList[server_id].append(result["title"])
         queuePos = len(queueList) + 1
-        print(queue)
-        queue = queue.append(result["title"])
-        queueList[server_id] = queue
+        #queue = queue.append(result["title"])
+        #queueList[server_id] = queue
+        print(queueList)
         await addedToQueue(music = result, ctx = ctx, pos = queuePos)
 
 class PlayingUtils:
@@ -411,7 +421,6 @@ class Lyrics:
                 await file.write(lyrics)
             await ctx.send(file=discord.File(trackId + ".txt"))
 
-
 async def disconnectOnEmptyChannel():
     global vc
     global vc_id
@@ -439,8 +448,44 @@ async def disconnectOnEmptyChannel():
         except Exception as e:
             print(e)
         await asyncio.sleep(600)  # Do it every 10 minutes
-    
 
+async def playNext():
+    global vc
+    global vc_id
+    global tc_id
+    global sr_id
+    global queueList
+
+    while True:
+
+        print("Queue checking!")
+        print(f"[voice-channel] {vc}")
+        print(f"[voice-id] {vc_id}")
+        print(f"[text-channel] {tc_id}")
+        print(f"[serverId] {sr_id}")
+        print(f"[queue-list] {queueList}")
+        try:
+            for voice_id in vc_id:
+                vcid = vc_id.index(voice_id)
+                await bot.wait_until_ready()
+                channel = bot.get_channel(id=voice_id)
+                tchannel = bot.get_channel(int(tc_id[vcid]))
+                serverId = sr_id[vcid]
+                if vc[vcid].isPlaying():
+                    print("Skipping, since it still is playing!")
+                else:
+                    print("Nothing is playing! Playing next in queue")
+                    try:
+                        await tchannel.send("Playing next in queue!")
+                        await tchannel.send("!py "+queueList[serverId][0])
+                        del queueList[serverId][0]
+                    except Exception as e:
+                        print("Failed to disconnect")
+                        print(e)
+                    #await bot.change_presence(status=discord.Status.idle)
+        except Exception as e:
+            print(e)
+        await asyncio.sleep(5)  # Do it every 5 seconds
 
 def setup(bot):
     bot.add_cog(Playing(bot))
