@@ -19,6 +19,19 @@ vc = []
 tc_id = []
 vc_id = []
 
+"""
+JSON for queue should look something like this:
+
+{
+    <server_id>: ["Song 1", "Song 2"...],
+    <server_id>: ["Birds - Imagine Drangons", "Faded - Alan Walker"...],
+}
+
+Everything should be queried from YouTube
+"""
+
+queueList = {}
+
 error = 0
 
 @bot.event
@@ -203,6 +216,52 @@ class Playing:
 #        return
 #
 #    await ctx.message.channel.send(file = discord.File(fp = await harmonoid.trackDownload(trackName = arg, trackId=None, albumId=None)))
+
+class QueueManagment:
+    def __init__(self, bot):
+        self.bot = bot
+
+    # Prints current queue for the server
+    @bot.command(aliases=["q"])
+    async def queue(ctx):
+        server_id = ctx.message.guild.id
+        msg = ""
+        try:
+            q = queueList[server_id]
+        except:
+            await ctx.send("Sorry, but there are no songs in queue")
+            return
+        
+        if q == [] or q == None:
+            await ctx.send("Sorry, but there are no songs in queue")
+            return
+        
+        index = 0
+        for qu in q:
+            index += 1
+            msg = msg + "\n " + str(index) + ". " + qu
+        
+        await ctx.send(msg)
+    
+    @bot.command(aliases=["pq"])
+    async def playQueue(ctx, *, arg):
+        global queueList
+        result = await harmonoid.searchYT(arg)
+        result = result["result"][0]
+        server_id = ctx.message.guild.id
+        try:
+            queue = queueList[server_id]
+        except:
+            print("Appending queue to JSON")
+            #z = json.loads(queueList)
+            y = {server_id:[]}
+            queueList.update(y)
+        queue = queueList[server_id]
+        queuePos = len(queueList) + 1
+        print(queue)
+        queue = queue.append(result["title"])
+        queueList[server_id] = queue
+        await addedToQueue(music = result, ctx = ctx, pos = queuePos)
 
 class PlayingUtils:
     def __init__(self, bot):
@@ -389,6 +448,7 @@ def setup(bot):
     bot.add_cog(Lyrics(bot))
     bot.add_cog(About(bot))
     bot.add_cog(Utils(bot))
+    bot.add_cog(QueueManagment(bot))
 
 if __name__ == "__main__":
     bot.run(TOKEN)
