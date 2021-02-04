@@ -2,13 +2,13 @@ from commands import *
 
 
 class Playback(Commands):
+
     def __init__(self, bot):
         super().__init__(bot)
     
     @commands.command(aliases=['p'])
     async def play(self, ctx, *, arg):
-        serverId = ctx.message.guild.id
-        if ctx.author == self.bot.user:
+        if not (server := await Server.get(ctx, self.embed)):
             return None
         ''' Downloading Track '''
         try:
@@ -29,32 +29,14 @@ class Playback(Commands):
                 '❌'
             )
             return None
-        ''' Managing Server & Channel IDs '''
-        try:
-            voiceChannelId = discord.utils.get(ctx.guild.channels, name='Music').id
-        except:
-            await self.embed.exception(
-                ctx,
-                'Information',
-                'Please make a voice channel with name "Music" first. 🔧',
-                '❌'
-            )
-            return None
-        textChannelId = ctx.message.channel.id
-        if voiceChannelId not in Commands.voiceChannelIds:
-            voiceChannel = await self.bot.get_channel(voiceChannelId).connect()
-            Commands.voiceChannels.append(voiceChannel)
-            Commands.voiceChannelIds.append(voiceChannelId)
-            Commands.textChannelIds.append(textChannelId)
-            Commands.serverIds.append(serverId)
         ''' Playing Track '''
-        voiceChannelIndex = Commands.voiceChannelIds.index(voiceChannelId)
+        voiceChannel = await server.getVoiceChannel(ctx, self.bot)
         try:
-            Commands.voiceChannels[voiceChannelIndex].play(discord.FFmpegOpusAudio(f'{track["trackId"]}.webm'))
+            voiceChannel.play(discord.FFmpegOpusAudio(f'{track["trackId"]}.webm'))
         except:
             try:
-                Commands.voiceChannels[voiceChannelId].stop()
-                Commands.voiceChannels[voiceChannelId].play(discord.FFmpegOpusAudio(f'{track["trackId"]}.webm'))
+                voiceChannel.stop()
+                voiceChannel.play(discord.FFmpegOpusAudio(f'{track["trackId"]}.webm'))
             except:
                 await self.embed.exception(
                     ctx,
@@ -76,7 +58,8 @@ class Playback(Commands):
 
     @commands.command(aliases=['py'])
     async def playYT(self, ctx, *, arg):
-        serverId = ctx.message.guild.id
+        if not (server := await Server.get(ctx, self.embed)):
+            return None
         if ctx.author == self.bot.user:
             return None
         ''' Downloading Video '''
@@ -98,32 +81,14 @@ class Playback(Commands):
                 '❌'
             )
             return None
-        ''' Managing Server & Channel IDs '''
+        ''' Playing Video '''
+        voiceChannel = await server.getVoiceChannel(ctx, self.bot)
         try:
-            voiceChannelId = discord.utils.get(ctx.guild.channels, name='Music').id
-        except:
-            await self.embed.exception(
-                ctx,
-                'Information',
-                'Please make a voice channel with name "Music" first. 🔧',
-                '❌'
-            )
-            return None
-        textChannelId = ctx.message.channel.id
-        if voiceChannelId not in Commands.voiceChannelIds:
-            voiceChannel = await self.bot.get_channel(voiceChannelId).connect()
-            Commands.voiceChannels.append(voiceChannel)
-            Commands.voiceChannelIds.append(voiceChannelId)
-            Commands.textChannelIds.append(textChannelId)
-            Commands.serverIds.append(serverId)
-        ''' Playing Track '''
-        voiceChannelIndex = Commands.voiceChannelIds.index(voiceChannelId)
-        try:
-            Commands.voiceChannels[voiceChannelIndex].play(discord.FFmpegPCMAudio(f'{video["id"]}.webm'))
+            voiceChannel.play(discord.FFmpegPCMAudio(f'{video["id"]}.webm'))
         except:
             try:
-                Commands.voiceChannels[voiceChannelId].stop()
-                Commands.voiceChannels[voiceChannelId].play(discord.FFmpegPCMAudio(f'{video["id"]}.webm'))
+                voiceChannel.stop()
+                voiceChannel.play(discord.FFmpegPCMAudio(f'{video["id"]}.webm'))
             except:
                 await self.embed.exception(
                     ctx,
