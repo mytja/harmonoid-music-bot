@@ -106,6 +106,9 @@ class Embed:
             reaction,
             True,
         )
+
+    async def text(self, context, text, reaction):
+        await self.__createText(context, text, reaction)
     
     async def file(self, context, fileName, reaction):
         asyncio.ensure_future(context.message.add_reaction('👌'))
