@@ -34,6 +34,20 @@ class YouTubeMusic:
         else:
             return None
 
+    async def getLyrics(self, trackName, save = False):
+        result = await self.__youtube.searchYouTube(trackName, 'songs')
+        track = result[0]
+        watchPlaylist = await self.__youtube.getWatchPlaylist(track['videoId'])
+        try:
+            lyrics = await self.__youtube.getLyrics(watchPlaylist['lyrics'])
+            if save:
+                async with aiofiles.open('lyrics.txt', 'w', encoding='utf_8') as file:
+                    await file.write(lyrics['lyrics'])
+            lyrics.update(track)
+            return lyrics
+        except:
+            return None
+
     async def __getTrack(self, trackName):
         result = await self.__youtube.searchYouTube(trackName, 'songs')
         track, album = await asyncio.gather(

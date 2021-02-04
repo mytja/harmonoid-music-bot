@@ -36,6 +36,25 @@ class Embed:
             True,
         )
 
+    async def lyrics(self, context, lyrics):
+        await self.__createEmbed(
+            context,
+            'Lyrics',
+            f'**[{lyrics["title"]}](https://youtube.com/watch?v={lyrics["videoId"]})**',
+            lyrics['thumbnails'][-1]['url'],
+            [
+                EmbedField('Album', lyrics['album']['name'], inline = False),
+                EmbedField('Artists', ', '.join([artist['name'] for artist in lyrics['artists']]), inline = False),
+            ],
+            '🎹',
+            True,
+        )
+        await self.__createText(
+            context,
+            f'```{lyrics["lyrics"]}```\n{lyrics["source"]}',
+            '🎹'
+        )
+
     async def addedToQueue(self, context, track, position):
         await self.__createEmbed(
             context,
@@ -87,6 +106,13 @@ class Embed:
             reaction,
             True,
         )
+    
+    async def file(self, context, fileName, reaction):
+        asyncio.ensure_future(context.message.add_reaction('👌'))
+        message = await context.send(
+            file = discord.File(fileName),
+        )
+        asyncio.ensure_future(message.add_reaction(reaction))
 
     async def __createEmbed(self, context, title: str, description: str, thumbnail:str, fields: list, reaction: str, isMonospaced: bool):
         asyncio.ensure_future(context.message.add_reaction('👌'))
@@ -108,6 +134,11 @@ class Embed:
             icon_url=context.author.avatar_url
         )
         message = await context.send(embed=embed)
+        asyncio.ensure_future(message.add_reaction(reaction))
+    
+    async def __createText(self, context, text: str, reaction: str):
+        asyncio.ensure_future(context.message.add_reaction('👌'))
+        message = await context.send(text)
         asyncio.ensure_future(message.add_reaction(reaction))
 
 
