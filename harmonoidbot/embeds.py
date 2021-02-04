@@ -17,6 +17,21 @@ async def embedNowYT(music, ctx):
     )
     await ctx.send(embed=embed)
 
+async def embedNowYT_q(music, tchannel):
+    embed = discord.Embed(
+        title="Now playing",
+        description=f"**[{music['title']}]({music['url']})**",
+        color=discord.Colour.random(),
+    )
+    embed.set_thumbnail(url=music["thumbnail"])
+    #embed.add_field(name="Requested by", value=f"`{ctx.author.name}`", inline=True)
+    embed.add_field(
+        name="Duration",
+        value=f"`{utils.format_duration_yt(music['duration'])}`",
+        inline=True,
+    )
+    await tchannel.send(embed=embed)
+
 async def addedToQueue(music, ctx, pos):
     embed = discord.Embed(
         title="Added to queue",

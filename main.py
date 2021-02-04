@@ -81,7 +81,7 @@ class Playing:
             await ctx.send("No voice channel called Music. Please create one.")
             return
 
-        chat_id = ctx.message.guild.id
+        chat_id = ctx.message.channel.id
 
         if channel_id not in vc_id:
             print("[server-append] Server was not appended!")
@@ -171,7 +171,7 @@ class Playing:
             await ctx.send("No voice channel called Music... Please create one.")
             return
 
-        chat_id = ctx.message.guild.id
+        chat_id = ctx.message.channel.id
 
         if channel_id not in vc_id:
             print("[server-append] Server was not appended!")
@@ -218,6 +218,65 @@ class Playing:
                 "Failed to summon an embed :sad: . But the song is still playing :wink: "
             )
         
+async def pl_yt(songName, sr_id, chat_id, vc, vcid):
+
+    server_id = sr_id
+    tchannel = bot.get_channel(id=int(tc_id[vcid]))
+
+    try:
+        await harmonoid.youtube.getJS()
+    except Exception as e:
+        print(f"Failed to get JS: {e}")
+        logging.exception("\n\n--------\n\nException number " + str(error) + ": ")
+        error += 1
+        await tchannel.send(
+            f"Failed to get JavaScript from a player :sad: . Trying to continue. Code to report to maintainers: {error-1}"
+        )
+    #if ctx.author == bot.user:
+    #    return
+
+    try:
+        filename = await harmonoid.YTdownload(trackName=songName)
+    except Exception as e:
+        await tchannel.send(
+            f"Sorry, but there was an Internal Server Error. Please report it to our maintainers. Unique error ID: {error}"
+        )
+        logging.exception("\n\n--------\n\nException number " + str(error) + ": ")
+        error += 1
+        print(f"[track-download] {e}")
+        return
+
+    try:
+        vc.play(
+            discord.FFmpegPCMAudio(filename["trackId"] + ".ogg"),
+            after=lambda e: print(
+                "[ffmpeg-player] Successfully summoned FFMPEG player!", e
+            ),
+        )
+    except:
+        try:
+            vc.stop()
+            vc.play(
+                discord.FFmpegPCMAudio(filename["trackId"] + ".ogg"),
+                after=lambda e: print(
+                    "[ffmpeg-player] Successfully summoned FFMPEG player!", e
+                ),
+            )
+        except Exception as e:
+            print(f"Failed to summon FFMPEG player - Exception: ", e)
+            logging.exception("\n\n--------\n\nException number " + str(error) + ": ")
+            error += 1
+            tchannel.send(
+                f"Failed to summon a player :cry: ... Please report a problem to our maintainers. Unique error code {error-1}"
+            )
+            return
+    try:
+        await embedNowYT_q(music=filename, tchannel=tchannel)
+    except Exception as e:
+        print(f"[embed-exception] Exception: {e}")
+        await ctx.send(
+            "Failed to summon an embed :sad: . But the song is still playing :wink: "
+        )
         #await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=filename["title"]))
 
 # @bot.command()
@@ -253,7 +312,7 @@ class QueueManagment:
         
         await ctx.send(msg)
     
-    @bot.command(aliases=["pq", "dp", "pd", "add"])
+    @bot.command(aliases=["pq", "add", "queue add"])
     async def playQueue(ctx, *, arg):
         global queueList
         result = await harmonoid.searchYT(arg)
@@ -279,7 +338,7 @@ class PlayingUtils:
 
     @bot.command(aliases=["s"])
     async def stop(ctx):
-        server_id = ctx.message.guild.id
+        server_id = ctx.message.channel.id
         tcid = tc_id.index(server_id)
         if tcid != None:
             if vc[tcid].is_playing():
@@ -293,7 +352,7 @@ class PlayingUtils:
 
     @bot.command()
     async def pause(ctx):
-        server_id = ctx.message.guild.id
+        server_id = ctx.message.channel.id
         tcid = tc_id.index(server_id)
         if tcid != None:
             if vc[tcid].is_playing():
@@ -305,7 +364,7 @@ class PlayingUtils:
 
     @bot.command(aliases=["r"])
     async def resume(ctx):
-        server_id = ctx.message.guild.id
+        server_id = ctx.message.channel.id
         tcid = tc_id.index(server_id)
         if tcid != None:
             vc[tcid].resume()
@@ -321,10 +380,10 @@ class Utils:
         global vc
         global vc_id
         global tc_id
-        tcid = tc_id.index(ctx.message.guild.id)
+        tcid = tc_id.index(ctx.message.channel.id)
 
         try:
-            tc_id.remove(ctx.message.guild.id)
+            tc_id.remove(ctx.message.channel.id)
         except:
             print("Server wasn't in list of servers, so it can't be refreshed!")
 
@@ -461,29 +520,24 @@ async def playNext():
             for voice_id in vc_id:
                 vcid = vc_id.index(voice_id)
                 await bot.wait_until_ready()
-                channel = bot.get_channel(id=voice_id)
-                tchannel = bot.get_channel(int(tc_id[vcid]))
+                tchannel = bot.get_channel(id=int(tc_id[vcid]))
                 serverId = sr_id[vcid]
 
-                print("Queue checking!")
-                print(f"[voice-channel] {vc}")
-                print(f"[voice-id] {vc_id}")
-                print(f"[text-channel] {tc_id}")
-                print(f"[serverId] {sr_id}")
+                #print("Queue checking!")
+                #print(f"[voice-channel] {vc}")
+                #print(f"[voice-id] {vc_id}")
+                #print(f"[text-channel] {tc_id}")
+                #print(f"[serverId] {sr_id}")
                 print(f"[queue-list] {queueList}")
-                print(f"[is-playing] {vc[vcid].isPlaying()}")
+                #print(f"[is-playing] {vc[vcid].is_playing()}")
 
-                if vc[vcid].isPlaying():
+                if vc[vcid].is_playing() or queueList[serverId] == None or queueList[serverId] == []:
                     print("Skipping, since it still is playing!")
                 else:
                     print("Nothing is playing! Playing next in queue")
-                    try:
-                        await tchannel.send("Playing next in queue!")
-                        await tchannel.send("!py "+queueList[serverId][0])
-                        del queueList[serverId][0]
-                    except Exception as e:
-                        print("Failed to disconnect")
-                        print(e)
+                    await tchannel.send("Playing next in queue!")
+                    await pl_yt(vcid=vcid, vc=vc[vcid], chat_id=tchannel, songName=queueList[serverId][0], sr_id=serverId)
+                    del queueList[serverId][0]
                     #await bot.change_presence(status=discord.Status.idle)
         except Exception as e:
             print(e)

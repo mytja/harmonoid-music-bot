@@ -5,23 +5,28 @@
 
 
 # Commands
-| Command                 | Aliases        | What does it do                                                                           |
-|-------------------------|----------------|-------------------------------------------------------------------------------------------|
-| !play <song name>       | !p             | Joins a voice channel called Music, and plays the song from Youtube Music                 |
-| !playYT <song name>     | !play_yt !py   | Joins a voice channel called Music, and plays the song or video (only audio) from YouTube |
-| !stop                   | !s             | Stops playing a song                                                                      |
-| !pause                  |                | Pauses playing a song                                                                     |
-| !resume                 | !r             | Resumes playing a song                                                                    |
-| !lyrics <song name>     |                | Sends lyrics of the song into the chat if he finds them                                   |
-| !lyricsSend <song name> |                | Sends lyrics of the song into the chat in .txt document if he finds them                  |
-| !disconnect             |                | Disconnects from a voice channel                                                          |
-| !about                  |                | Send about embed into chat                                                                |
+| Command                 | Aliases             | What does it do                                                                           |
+|-------------------------|---------------------|-------------------------------------------------------------------------------------------|
+| !play <song name>       | !p                  | Joins a voice channel called Music, and plays the song from Youtube Music                 |
+| !playYT <song name>     | !play_yt !py        | Joins a voice channel called Music, and plays the song or video (only audio) from YouTube |
+| !stop                   | !s                  | Stops playing a song                                                                      |
+| !pause                  |                     | Pauses playing a song                                                                     |
+| !resume                 | !r                  | Resumes playing a song                                                                    |
+| !lyrics <song name>     |                     | Sends lyrics of the song into the chat if he finds them                                   |
+| !lyricsSend <song name> |                     | Sends lyrics of the song into the chat in .txt document if he finds them                  |
+| !disconnect             |                     | Disconnects from a voice channel                                                          |
+| !about                  |                     | Send about embed into chat                                                                |
+| !playQueue <song name>  | !pq !add !queue add | Adds specific song from YouTube to queue                                                  |
+| !queue                  | !q                  | Shows current queue for server                                                            |
 
 # Commands in beta
 - !about
+- !pq <song name>
+- !q
 
 # Features in beta
-- Changing status according to song which is playing
+- Auto-disconnect every 10 minutes on empty channel
+- Queue
 
 # :heart: Special thanks to this people & organisations
 - [harmonoid](https://github.com/harmonoid) for [harmonoid-service](https://github.com/harmonoid/harmonoid-service)
