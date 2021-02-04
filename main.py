@@ -611,7 +611,7 @@ async def playNext():
                     #await bot.change_presence(status=discord.Status.idle)
         except Exception as e:
             print(e)
-        await asyncio.sleep(1)  # Do it every 5 seconds
+        await asyncio.sleep(3)  # Do it every 5 seconds
 
 def setup(bot):
     bot.add_cog(Playing(bot))
