@@ -20,6 +20,7 @@
 | !queue                  | !q                  | Shows current queue for server                                                            |
 | !remove                 | !rm                 | Remove specific song position from queue                                                  |
 | !clear                  | !qc !cl             | Clears current queue                                                                      |
+| !connect                | !conn               | Connects to voice channel called Music (useful for easy playing Queues)                   |
 
 # Commands in beta
 - !about
@@ -27,6 +28,7 @@
 - !q
 - !clear
 - !remove
+- !connect
 
 # Features in beta
 - Auto-disconnect every 10 minutes on empty channel

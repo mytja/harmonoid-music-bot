@@ -325,12 +325,33 @@ class QueueManagment:
             #z = json.loads(queueList)
             y = {server_id:[]}
             queueList.update(y)
-        queuePos = len(queueList) + 1
+        queuePos = len(queueList[server_id]) + 1
         queueList[server_id].append(result["title"])
         #queue = queue.append(result["title"])
         #queueList[server_id] = queue
         print(queueList)
         await addedToQueue(music = result, ctx = ctx, pos = queuePos)
+    
+    """
+    @bot.command(aliases=["sq", "start queue"]
+    async def queueStart(ctx):
+        global sr_id
+        global vc_id
+        global vc
+        global tc_id
+        
+        server_id = ctx.message.guild.id
+        vcid = vc_id.index(channel_id)
+        channel = discord.utils.get(ctx.guild.channels, name="Music")
+        if channel.id not in vc_id:
+            vc1 = await channel.connect()
+            vc.append(vc1)
+            tc_id.append(ctx.message.channel.id)
+            vc_id.append(channel.id)
+            sr_id.append(server_id)
+        
+        await ctx.send("Successfully connected to voice channel.")
+    """        
     
     @bot.command(aliases=["rm"])
     async def remove(ctx, *, arg):
@@ -345,9 +366,9 @@ class QueueManagment:
             return 
         try:
             del queueList[server_id][q]
-            ctx.send("Successfully removed song #"+str(q))
+            await ctx.send("Successfully removed song #"+str(q))
         except:
-            ctx.send("Failed to remove song #"+str(q))
+            await ctx.send("Failed to remove song #"+str(q))
     
     @bot.command(aliases=["qc", "c"])
     async def clear(ctx):
@@ -357,9 +378,9 @@ class QueueManagment:
         
         try:
             queueList[server_id].clear()
-            ctx.send("Successfully cleared queue")
+            await ctx.send("Successfully cleared queue")
         except:
-            ctx.send("Failed to clear queue")
+            await ctx.send("Failed to clear queue")
 
 
 class PlayingUtils:
@@ -464,6 +485,25 @@ class Utils:
         del vc[tcid]
 
         await ctx.send("Successfully disconnected from a voice channel :smiley: ")
+    
+    @bot.command(aliases=["conn"])
+    async def connect(ctx):
+        global sr_id
+        global vc_id
+        global vc
+        global tc_id
+        
+        server_id = ctx.message.guild.id
+        channel = discord.utils.get(ctx.guild.channels, name="Music")
+        if channel.id not in vc_id:
+            #vcid = vc_id.index(channel.id)
+            vc1 = await channel.connect()
+            vc.append(vc1)
+            tc_id.append(ctx.message.channel.id)
+            vc_id.append(channel.id)
+            sr_id.append(server_id)
+        
+        await ctx.send("Successfully connected to voice channel.")
 
 class About:
     def __init__(self, bot):
@@ -571,7 +611,7 @@ async def playNext():
                     #await bot.change_presence(status=discord.Status.idle)
         except Exception as e:
             print(e)
-        await asyncio.sleep(5)  # Do it every 5 seconds
+        await asyncio.sleep(1)  # Do it every 5 seconds
 
 def setup(bot):
     bot.add_cog(Playing(bot))
