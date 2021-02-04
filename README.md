@@ -18,11 +18,15 @@
 | !about                  |                     | Send about embed into chat                                                                |
 | !playQueue <song name>  | !pq !add !queue add | Adds specific song from YouTube to queue                                                  |
 | !queue                  | !q                  | Shows current queue for server                                                            |
+| !remove                 | !rm                 | Remove specific song position from queue                                                  |
+| !clear                  | !qc !cl             | Clears current queue                                                                      |
 
 # Commands in beta
 - !about
 - !pq <song name>
 - !q
+- !clear
+- !remove
 
 # Features in beta
 - Auto-disconnect every 10 minutes on empty channel

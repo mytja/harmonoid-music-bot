@@ -325,12 +325,42 @@ class QueueManagment:
             #z = json.loads(queueList)
             y = {server_id:[]}
             queueList.update(y)
+        queuePos = len(queueList) + 1
         queueList[server_id].append(result["title"])
-        queuePos = len(queueList)
         #queue = queue.append(result["title"])
         #queueList[server_id] = queue
         print(queueList)
         await addedToQueue(music = result, ctx = ctx, pos = queuePos)
+    
+    @bot.command(aliases=["rm"])
+    async def remove(ctx, *, arg):
+        global queueList
+        
+        server_id = ctx.message.guild.id
+        
+        try:
+            q = int(arg) - 1
+        except:
+            ctx.send("Cannot remove! Given was a string instead of a position")
+            return 
+        try:
+            del queueList[server_id][q]
+            ctx.send("Successfully removed song #"+str(q))
+        except:
+            ctx.send("Failed to remove song #"+str(q))
+    
+    @bot.command(aliases=["qc", "c"])
+    async def clear(ctx):
+        global queueList
+        
+        server_id = ctx.message.guild.id
+        
+        try:
+            queueList[server_id].clear()
+            ctx.send("Successfully cleared queue")
+        except:
+            ctx.send("Failed to clear queue")
+
 
 class PlayingUtils:
     def __init__(self, bot):
