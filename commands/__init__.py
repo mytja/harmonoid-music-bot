@@ -12,11 +12,13 @@ class Lifecycle:
     @staticmethod
     async def update():
         for server in Commands.recognisedServers:
+            if not server.queue:
+                continue
             try:
                 ''' Track Completed OR Jump '''
                 if (
                     not server.voiceConnection.is_playing() or type(server.modifiedQueueIndex) is int
-                ) and server.queue:
+                ):
                     ''' Analysing Queue '''
                     if server.modifiedQueueIndex is None:
                         ''' Next Track On Completion '''
