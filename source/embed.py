@@ -71,7 +71,7 @@ class Embed:
             True,
         )
 
-    async def queue(self, context, queue):
+    async def queue(self, context, queue, queueIndex):
         if not queue:
             await self.exception(
                 context,
@@ -82,7 +82,13 @@ class Embed:
             return None
         queueString = ''
         for index, query in enumerate(queue):
-            queueString += f'{index + 1}. {query["trackName"]} - {", ".join(query["trackArtistNames"])}\n'
+            if queueIndex == index:
+                queueString += '🎵'
+            elif queueIndex < index:
+                queueString += '❎'
+            elif queueIndex > index:
+                queueString += '✅'
+            queueString += f' {index + 1}. {query["trackName"]} - {", ".join(query["trackArtistNames"])}\n\n'
         await self.__createEmbed(
             context,
             'Queue',
@@ -92,7 +98,7 @@ class Embed:
                 EmbedField('Coming Up', queueString, False),
             ],
             '📑',
-            True,
+            False,
         )
 
     async def about(self, context):
