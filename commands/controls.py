@@ -10,34 +10,31 @@ class Controls(Commands):
     async def stop(self, ctx):
         if not (server := await Server.get(ctx)):
             return None
-        if not server.isStopped:
-            server.stop()
-            await self.embed.text(
-                ctx,
-                'Stopped Music. ⏹',
-                '✅'
-            )
+        server.stop()
+        await self.embed.text(
+            ctx,
+            'Stopped Music. ⏹',
+            '✅'
+        )
 
-    @commands.command()
+    @commands.command(aliases=['pp'])
     async def pause(self, ctx):
         if not (server := await Server.get(ctx)):
             return None
-        if not server.isPaused:
-            server.pause()
-            await self.embed.text(
-                ctx,
-                'Paused Music. ⏸',
-                '✅'
-            )
+        server.pause()
+        await self.embed.text(
+            ctx,
+            'Paused Music. ⏸',
+            '✅'
+        )
 
     @commands.command(aliases=['r'])
     async def resume(self, ctx):
         if not (server := await Server.get(ctx)):
             return None
-        if server.isPaused:
-            server.resume()
-            await self.embed.text(
-                ctx,
-                'Resumed Music. ▶',
-                '✅'
-            )
+        server.resume()
+        await self.embed.text(
+            ctx,
+            'Resumed Music. ▶',
+            '✅'
+        )

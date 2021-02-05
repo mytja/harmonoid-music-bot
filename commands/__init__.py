@@ -29,9 +29,8 @@ class Server:
         self.voiceChannel = None
         self.textChannel = None
         self.voiceConnection = None
-        self.isPaused = True
-        self.isStopped = True
         self.queueIndex = None
+        self.modifiedQueueIndex = None
         self.queue = []
 
     async def getVoiceChannel(self, context):
@@ -42,26 +41,19 @@ class Server:
         return self.voiceConnection
 
     async def connect(self):
-        self.isPaused = False
-        self.isStopped = False
         self.voiceConnection = await self.voiceChannel.connect()
 
     async def disconnect(self):
-        self.isPaused = True
-        self.isStopped = True
         await self.voiceChannel.disconnect()
         self.voiceConnection = None
 
     def resume(self):
-        self.isPaused = False
         self.voiceConnection.resume()
 
     def pause(self):
-        self.isPaused = True
         self.voiceConnection.pause()
 
     def stop(self):
-        self.isStopped = True
         self.voiceConnection.stop()
 
     @staticmethod

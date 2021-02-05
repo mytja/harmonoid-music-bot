@@ -6,7 +6,7 @@ class Lyrics(Commands):
     def __init__(self):
         super().__init__(Commands.bot)
 
-    @commands.command()
+    @commands.command(alias=['l'])
     async def lyrics(self, ctx, *, arg):
         lyrics = await self.youtubeMusic.getLyrics(arg)
         if lyrics:
@@ -25,7 +25,7 @@ class Lyrics(Commands):
                 '❌'
             )
     
-    @commands.command()
+    @commands.command(alias=['ls'])
     async def lyricsSend(self, ctx, *, arg):
         lyrics = await self.youtubeMusic.getLyrics(arg, True)
         if lyrics:
