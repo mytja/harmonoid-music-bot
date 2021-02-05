@@ -9,6 +9,7 @@ from scripts.youtubemusic import YouTubeMusic
 
 class Commands(commands.Cog):
     ''' Static Members '''
+    bot = None
     recognisedServers = []
 
     def __init__(self, bot):
@@ -19,21 +20,24 @@ class Commands(commands.Cog):
 
 
 class Server:
-    
+
     def __init__(self, context, serverId, voiceChannelId, textChannelId):
         self.context = context
         self.serverId = serverId
         self.voiceChannelId = voiceChannelId
         self.textChannelId = textChannelId
         self.voiceChannel = None
+        self.textChannel = None
         self.voiceConnection = None
         self.isPaused = True
         self.isStopped = True
+        self.queueIndex = None
         self.queue = []
 
-    async def getVoiceChannel(self, context, bot):
+    async def getVoiceChannel(self, context):
         if not self.voiceConnection:
-            self.voiceChannel = bot.get_channel(discord.utils.get(context.guild.channels, name='Music').id)
+            self.voiceChannel = Commands.bot.get_channel(discord.utils.get(context.guild.channels, name='Music').id)
+            self.textChannel = Commands.bot.get_channel(self.textChannelId)
             await self.connect()
         return self.voiceConnection
 
@@ -61,7 +65,7 @@ class Server:
         self.voiceConnection.stop()
 
     @staticmethod
-    async def get(context, embed):
+    async def get(context):
         asyncio.ensure_future(context.message.add_reaction('👀'))
         for server in Commands.recognisedServers:
             if server.serverId == context.message.guild.id:
@@ -69,7 +73,7 @@ class Server:
         try:
             voiceChannelId = discord.utils.get(context.guild.channels, name='Music').id
         except:
-            await embed.exception(
+            await Embed().exception(
                 context,
                 'Information',
                 'Please make a voice channel with name "Music" first. 🔧',

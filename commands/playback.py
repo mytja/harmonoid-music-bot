@@ -3,12 +3,12 @@ from commands import *
 
 class Playback(Commands):
 
-    def __init__(self, bot):
-        super().__init__(bot)
+    def __init__(self):
+        super().__init__(Commands.bot)
     
     @commands.command(aliases=['p'])
     async def play(self, ctx, *, arg):
-        if not (server := await Server.get(ctx, self.embed)):
+        if not (server := await Server.get(ctx)):
             return None
         ''' Downloading Track '''
         try:
@@ -30,7 +30,7 @@ class Playback(Commands):
             )
             return None
         ''' Playing Track '''
-        voiceChannel = await server.getVoiceChannel(ctx, self.bot)
+        voiceChannel = await server.getVoiceChannel(ctx)
         try:
             voiceChannel.play(discord.FFmpegOpusAudio(f'{track["trackId"]}.webm'))
         except:
@@ -41,7 +41,7 @@ class Playback(Commands):
                 await self.embed.exception(
                     ctx,
                     'Internal Error',
-                    f'Could not start FFmpeg player. 📻',
+                    f'Could not start player. 📻',
                     '❌'
                 )
                 return None
@@ -58,9 +58,7 @@ class Playback(Commands):
 
     @commands.command(aliases=['py'])
     async def playYT(self, ctx, *, arg):
-        if not (server := await Server.get(ctx, self.embed)):
-            return None
-        if ctx.author == self.bot.user:
+        if not (server := await Server.get(ctx)):
             return None
         ''' Downloading Video '''
         try:
@@ -82,7 +80,7 @@ class Playback(Commands):
             )
             return None
         ''' Playing Video '''
-        voiceChannel = await server.getVoiceChannel(ctx, self.bot)
+        voiceChannel = await server.getVoiceChannel(ctx)
         try:
             voiceChannel.play(discord.FFmpegPCMAudio(f'{video["id"]}.webm'))
         except:
@@ -93,7 +91,7 @@ class Playback(Commands):
                 await self.embed.exception(
                     ctx,
                     'Internal Error',
-                    f'Could not start FFmpeg player. 📻',
+                    f'Could not start player. 📻',
                     '❌'
                 )
                 return None

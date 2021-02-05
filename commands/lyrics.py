@@ -3,8 +3,8 @@ from commands import *
 
 class Lyrics(Commands):
 
-    def __init__(self, bot):
-        super().__init__(bot)
+    def __init__(self):
+        super().__init__(Commands.bot)
 
     @commands.command()
     async def lyrics(self, ctx, *, arg):
