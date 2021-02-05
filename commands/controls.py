@@ -7,17 +7,6 @@ class Controls(Commands):
         super().__init__(Commands.bot)
 
     @commands.command(aliases=['s'])
-    async def stop(self, ctx):
-        if not (server := await Server.get(ctx)):
-            return None
-        server.stop()
-        await self.embed.text(
-            ctx,
-            'Stopped Music. ⏹',
-            '✅'
-        )
-
-    @commands.command(aliases=['pp'])
     async def pause(self, ctx):
         if not (server := await Server.get(ctx)):
             return None
