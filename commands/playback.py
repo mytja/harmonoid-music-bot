@@ -14,6 +14,7 @@ class Playback(Commands):
             server.queue,
             server.queueIndex,
         )
+        await Commands.listenUpdates()
 
     @commands.command(aliases=['n'])
     async def next(self, ctx):
@@ -21,6 +22,7 @@ class Playback(Commands):
             return None
         ''' Next Track '''
         server.modifiedQueueIndex = server.queueIndex + 1
+        await Commands.listenUpdates()
 
     @commands.command(aliases=['b'])
     async def back(self, ctx):
@@ -28,6 +30,7 @@ class Playback(Commands):
             return None
         ''' Previous Track '''
         server.modifiedQueueIndex = server.queueIndex - 1
+        await Commands.listenUpdates()
 
     @commands.command(aliases=['j'])
     async def jump(self, ctx, *, arg):
@@ -36,6 +39,7 @@ class Playback(Commands):
         ''' Previous Track '''
         try:
             server.modifiedQueueIndex = int(arg) - 1
+            await Commands.listenUpdates()
         except:
             await self.embed.exception(
                 ctx,
@@ -78,6 +82,7 @@ class Playback(Commands):
             else:
                 ''' Show Added To Queue '''
                 await self.embed.addedToQueue(ctx, track)
+            await Commands.listenUpdates()
         except:
             await self.embed.exception(
                 ctx,

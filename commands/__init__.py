@@ -7,10 +7,88 @@ from scripts.youtube import YouTube
 from scripts.youtubemusic import YouTubeMusic
 
 
+class Lifecycle:
+
+    @staticmethod
+    async def update():
+        for server in Commands.recognisedServers:
+            try:
+                ''' Track Completed OR Jump '''
+                if (
+                    not server.voiceConnection.is_playing() or type(server.modifiedQueueIndex) is int
+                ) and server.queue:
+                    ''' Analysing Queue '''
+                    if server.modifiedQueueIndex is None:
+                        ''' Next Track On Completion '''
+                        server.queueIndex += 1
+                        if server.queueIndex >= len(server.queue):
+                            ''' Queue Completed '''
+                            continue
+                        else:
+                            track = server.queue[server.queueIndex]
+                    else:
+                        ''' Modified Index '''
+                        if server.modifiedQueueIndex >= len(server.queue) or server.modifiedQueueIndex < 0:
+                            await Embed().exception(
+                                server.context,
+                                'Invalid Jump',
+                                f'No track is present at that index. 👀',
+                                '❌'
+                            )
+                            server.modifiedQueueIndex = None
+                            continue
+                        else:
+                            server.queueIndex = server.modifiedQueueIndex
+                            track = server.queue[server.queueIndex]
+                            server.modifiedQueueIndex = None
+                    ''' Playing Track '''
+                    voiceChannel = await server.getVoiceChannel(server.context)
+                    try:
+                        voiceChannel.play(
+                            discord.FFmpegOpusAudio(f'{track["trackId"]}.webm'),
+                            after = lambda exception: asyncio.run_coroutine_threadsafe(
+                                Commands.listenUpdates(), Commands.bot.loop
+                            ),
+                        )
+                    except:
+                        try:
+                            voiceChannel.stop()
+                            voiceChannel.play(
+                                discord.FFmpegOpusAudio(f'{track["trackId"]}.webm'),
+                                after = lambda exception: asyncio.run_coroutine_threadsafe(
+                                    Commands.listenUpdates(), Commands.bot.loop
+                                ),
+                            )
+                        except:
+                            await Embed().exception(
+                                server.context,
+                                'Internal Error',
+                                f'Could not start player. 📻',
+                                '❌'
+                            )
+                    ''' Displaying Metadata '''
+                    try:
+                        await Embed().nowPlaying(server.context, track)
+                    except:
+                        await Embed().exception(
+                            server.context,
+                            'Now Playing',
+                            'Could not send track information.\nMusic is still playing. 👌',
+                            '👌'
+                        )
+            except:
+                pass
+
+
+
 class Commands(commands.Cog):
     ''' Static Members '''
     bot = None
     recognisedServers = []
+
+    @staticmethod
+    async def listenUpdates():
+        await Lifecycle.update()
 
     def __init__(self, bot):
         self.bot = bot
