@@ -48,6 +48,41 @@ class Playback(Commands):
                 '❌'
             )
     
+    @commands.command(aliases=['d'])
+    async def delete(self, ctx, *, arg):
+        if not (server := await Server.get(ctx)):
+            return None
+        removeIndex = int(arg) - 1
+        for index, track in enumerate(server.queue):
+            if removeIndex == index:
+                await self.embed.removedFromQueue(
+                    ctx,
+                    server.queue[index],
+                )
+                server.queue.pop(index)
+                break
+        if removeIndex < server.queueIndex:
+            server.queueIndex -= 1
+        elif removeIndex == server.queueIndex:
+            server.modifiedQueueIndex = server.queueIndex
+            if not server.queue and server.voiceConnection:
+                await server.disconnect()
+            await Commands.listenUpdates()
+        else:
+            pass
+
+    @commands.command(aliases=['c'])
+    async def clear(self, ctx):
+        if not (server := await Server.get(ctx)):
+            return None
+        server.queue.clear()
+        await server.disconnect()
+        await self.embed.text(
+            ctx,
+            '**Cleared Queue**\nQueue is now empty. 🗑',
+            '✅'
+        )
+    
     @commands.command(aliases=['p'])
     async def play(self, ctx, *, arg):
         if not (server := await Server.get(ctx)):
@@ -76,8 +111,7 @@ class Playback(Commands):
             server.queue.append(track)
             if server.queueIndex is None:
                 ''' Show Now Playing '''
-                if not server.voiceChannel:
-                    await server.getVoiceChannel(ctx)
+                await server.getVoiceChannel(ctx)
                 server.queueIndex = -1
             else:
                 ''' Show Added To Queue '''

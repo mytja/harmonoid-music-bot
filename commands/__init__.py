@@ -124,8 +124,12 @@ class Server:
         self.voiceConnection = await self.voiceChannel.connect()
 
     async def disconnect(self):
-        await self.voiceChannel.disconnect()
+        await self.voiceConnection.disconnect()
+        self.voiceChannel = None
+        self.textChannel = None
         self.voiceConnection = None
+        self.queueIndex = None
+        self.modifiedQueueIndex = None
 
     def resume(self):
         self.voiceConnection.resume()
