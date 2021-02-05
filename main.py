@@ -1,18 +1,28 @@
-import os
 from commands import *
 from commands.playback import Playback
 from commands.controls import Controls
+from commands.queue import Queue
 from commands.lyrics import Lyrics
 from commands.about import About
+from commands.lifecycle import Lifecycle
 
 
 if __name__ == '__main__':
-    harmonoidMusicBot = commands.AutoShardedBot(
+    Commands.bot = commands.AutoShardedBot(
         command_prefix='!'
     )
-    harmonoidMusicBot.add_cog(Playback(harmonoidMusicBot))
-    harmonoidMusicBot.add_cog(Controls(harmonoidMusicBot))
-    harmonoidMusicBot.add_cog(Lyrics(harmonoidMusicBot))
-    harmonoidMusicBot.add_cog(About(harmonoidMusicBot))
+    Commands.bot.add_cog(Playback())
+    Commands.bot.add_cog(Controls())
+    Commands.bot.add_cog(Queue())
+    Commands.bot.add_cog(Lyrics())
+    Commands.bot.add_cog(About())
+    @Commands.bot.event
+    async def on_ready():
+        print('Connected to Discord.')
+        asyncio.ensure_future(
+            Lifecycle.listen(),
+            loop=Commands.bot.loop
+        )
+    import os
     TOKEN = os.environ.get('DISCORD_TOKEN')
-    harmonoidMusicBot.run(TOKEN)
+    Commands.bot.run(TOKEN)
