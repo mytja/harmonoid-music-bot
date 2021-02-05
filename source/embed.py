@@ -55,15 +55,41 @@ class Embed:
             '🎹'
         )
 
-    async def addedToQueue(self, context, track, position):
+    async def addedToQueue(self, context, track):
         await self.__createEmbed(
             context,
             'Added To Queue',
             f'**[{track["trackName"]}](https://music.youtube.com/watch?v={track["trackId"]})**',
             track['albumArtHigh'],
             [
-                EmbedField('Duration', track['duration'], True),
-                EmbedField('Position', track['duration'], True),
+                EmbedField('Album', track['albumName'], True),
+                EmbedField('Year', track['year'], True),
+                EmbedField('Duration', Method.formatDuration(track['trackDuration']), True),
+                EmbedField('Artists', ', '.join(track['trackArtistNames']), False),
+            ],
+            '📑',
+            True,
+        )
+
+    async def queue(self, context, queue):
+        if not queue:
+            await self.exception(
+                context,
+                'Empty Queue',
+                'No tracks found in the queue. 📑',
+                '❎'
+            )
+            return None
+        queueString = ''
+        for index, query in enumerate(queue):
+            queueString += f'{index + 1}. {query["trackName"]} - {", ".join(query["trackArtistNames"])}\n'
+        await self.__createEmbed(
+            context,
+            'Queue',
+            'Tracks in the queue',
+            None,
+            [
+                EmbedField('Coming Up', queueString, False),
             ],
             '📑',
             True,
