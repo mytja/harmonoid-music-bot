@@ -88,7 +88,7 @@ class Embed:
                 queueString += '❎'
             elif queueIndex > index:
                 queueString += '✅'
-            queueString += f' {index + 1}. {query["trackName"]} - {", ".join(query["trackArtistNames"])}\n\n'
+            queueString += f'  {index + 1}. {query["trackName"]} - _{", ".join(query["trackArtistNames"])}_\n\n'
         await self.__createEmbed(
             context,
             'Queue',
