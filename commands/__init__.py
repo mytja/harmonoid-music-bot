@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+import asyncio
 
 from source.embed import Embed
 from scripts.youtube import YouTube
@@ -9,7 +10,6 @@ from scripts.youtubemusic import YouTubeMusic
 class Commands(commands.Cog):
     ''' Static Members '''
     recognisedServers = []
-    botStatic = None
 
     def __init__(self, bot):
         self.bot = bot
@@ -19,6 +19,7 @@ class Commands(commands.Cog):
 
 
 class Server:
+    
     def __init__(self, context, serverId, voiceChannelId, textChannelId):
         self.context = context
         self.serverId = serverId
@@ -61,6 +62,7 @@ class Server:
 
     @staticmethod
     async def get(context, embed):
+        asyncio.ensure_future(context.message.add_reaction('👀'))
         for server in Commands.recognisedServers:
             if server.serverId == context.message.guild.id:
                 return server
