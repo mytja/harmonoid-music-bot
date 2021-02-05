@@ -8,9 +8,33 @@ class Lifecycle:
             await Commands.bot.wait_until_ready()
             for server in Commands.recognisedServers:
                 try:
-                    if not server.voiceConnection.is_playing() and server.queue:
+                    ''' Track Completed OR Jump '''
+                    if (
+                        not server.voiceConnection.is_playing() or type(server.modifiedQueueIndex) is int
+                    ) and server.queue:
+                        ''' Analysing Queue '''
+                        if server.modifiedQueueIndex is None:
+                            ''' Next Track On Completion '''
+                            server.queueIndex += 1
+                            if server.queueIndex >= len(server.queue):
+                                ''' Queue Completed '''
+                                continue
+                            else:
+                                track = server.queue[server.queueIndex]
+                        else:
+                            ''' Modified Index '''
+                            if server.modifiedQueueIndex >= len(server.queue) or server.modifiedQueueIndex < 0:
+                                await Embed().exception(
+                                    server.context,
+                                    'Invalid Jump',
+                                    f'No track is present at that index. 👀',
+                                    '❌'
+                                )
+                            else:
+                                server.queueIndex = server.modifiedQueueIndex
+                                track = server.queue[server.queueIndex]
+                            server.modifiedQueueIndex = None
                         ''' Playing Track '''
-                        track = server.queue[0]
                         voiceChannel = await server.getVoiceChannel(server.context)
                         try:
                             voiceChannel.play(discord.FFmpegOpusAudio(f'{track["trackId"]}.webm'))
@@ -25,7 +49,6 @@ class Lifecycle:
                                     f'Could not start player. 📻',
                                     '❌'
                                 )
-                                return None
                         ''' Displaying Metadata '''
                         try:
                             await Embed().nowPlaying(server.context, track)
@@ -36,7 +59,6 @@ class Lifecycle:
                                 'Could not send track information.\nMusic is still playing. 👌',
                                 '👌'
                             )
-                        server.queue.pop(0)
                 except:
                     pass
-            await asyncio.sleep(5)
+            await asyncio.sleep(2)
