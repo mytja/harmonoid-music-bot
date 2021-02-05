@@ -71,6 +71,22 @@ class Embed:
             True,
         )
 
+    async def removedFromQueue(self, context, track):
+        await self.__createEmbed(
+            context,
+            'Removed From Queue',
+            f'**[{track["trackName"]}](https://music.youtube.com/watch?v={track["trackId"]})**',
+            None,
+            [
+                EmbedField('Album', track['albumName'], True),
+                EmbedField('Year', track['year'], True),
+                EmbedField('Duration', Method.formatDuration(track['trackDuration']), True),
+                EmbedField('Artists', ', '.join(track['trackArtistNames']), False),
+            ],
+            '📑',
+            True,
+        )
+
     async def queue(self, context, queue, queueIndex):
         if not queue:
             await self.exception(
