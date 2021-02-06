@@ -14,7 +14,6 @@ class Playback(Commands):
             server.queue,
             server.queueIndex,
         )
-        await Commands.listenUpdates()
 
     @commands.command(aliases=['n'])
     async def next(self, ctx):
@@ -22,6 +21,7 @@ class Playback(Commands):
             return None
         ''' Next Track '''
         server.modifiedQueueIndex = server.queueIndex + 1
+        ''' Run mainloop to notice modifiedQueueIndex. '''
         await Commands.listenUpdates()
 
     @commands.command(aliases=['b'])
@@ -30,23 +30,16 @@ class Playback(Commands):
             return None
         ''' Previous Track '''
         server.modifiedQueueIndex = server.queueIndex - 1
+        ''' Run mainloop to notice modifiedQueueIndex. '''
         await Commands.listenUpdates()
 
     @commands.command(aliases=['j'])
     async def jump(self, ctx, *, arg):
         if not (server := await Server.get(ctx)):
             return None
-        ''' Previous Track '''
-        try:
-            server.modifiedQueueIndex = int(arg) - 1
-            await Commands.listenUpdates()
-        except:
-            await self.embed.exception(
-                ctx,
-                'Invalid Jump',
-                'No track is present at that index. 👀',
-                '❌'
-            )
+        server.modifiedQueueIndex = int(arg) - 1
+        ''' Run mainloop to notice modifiedQueueIndex. '''
+        await Commands.listenUpdates()
     
     @commands.command(aliases=['d'])
     async def delete(self, ctx, *, arg):
@@ -67,6 +60,7 @@ class Playback(Commands):
             server.modifiedQueueIndex = server.queueIndex
             if not server.queue and server.voiceConnection:
                 await server.disconnect()
+            ''' Run mainloop to notice modifiedQueueIndex. '''
             await Commands.listenUpdates()
         else:
             pass
@@ -77,10 +71,11 @@ class Playback(Commands):
             return None
         server.queue.clear()
         await server.disconnect()
-        await self.embed.text(
+        await self.embed.exception(
             ctx,
-            '**Cleared Queue**\nQueue is now empty. 🗑',
-            '✅'
+            'Cleared Queue',
+            'Queue is now empty. 🗑',
+            '📑'
         )
     
     @commands.command(aliases=['p'])
@@ -94,7 +89,7 @@ class Playback(Commands):
                 await self.embed.exception(
                     ctx,
                     'Internal Error',
-                    'Could not retrieve track information. ❌',
+                    'Could not retrieve track information. ℹ',
                     '❌'
                 )
                 return None
@@ -106,22 +101,22 @@ class Playback(Commands):
                 '❌'
             )
             return None
-        ''' Displaying Metadata '''
         try:
+            ''' Add To Queue '''
             server.queue.append(track)
-            if server.queueIndex is None:
-                ''' Show Now Playing '''
-                await server.getVoiceChannel(ctx)
-                server.queueIndex = -1
+            if not server.voiceConnection:
+                await server.connect()
+                ''' Run mainloop to notice server.voiceConnection. '''
+                await Commands.listenUpdates()
             else:
-                ''' Show Added To Queue '''
+                ''' Show addedToQueue if already connected to voiceChannel. '''
                 await self.embed.addedToQueue(ctx, track)
-            await Commands.listenUpdates()
+            
         except:
             await self.embed.exception(
                 ctx,
                 'Internal Error',
-                'Could not add track to queue. ❌',
+                'Could not add track to queue. 📑',
                 '❌'
             )
         ''' Playing Track '''
@@ -137,7 +132,7 @@ class Playback(Commands):
                 await self.embed.exception(
                     ctx,
                     'Internal Error',
-                    'Could not retrieve video information. ❌',
+                    'Could not retrieve video information. ℹ',
                     '❌'
                 )
                 return None
@@ -150,7 +145,7 @@ class Playback(Commands):
             )
             return None
         ''' Playing Video '''
-        voiceChannel = await server.getVoiceChannel(ctx)
+        voiceChannel = await server.connect()
         try:
             voiceChannel.play(discord.FFmpegPCMAudio(f'{video["id"]}.webm'))
         except:

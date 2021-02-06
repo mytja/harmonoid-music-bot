@@ -93,7 +93,7 @@ class Embed:
                 context,
                 'Empty Queue',
                 'No tracks found in the queue. 📑',
-                '❎'
+                '📑'
             )
             return None
         queueString = ''
@@ -104,7 +104,7 @@ class Embed:
                 queueString += '❎'
             elif queueIndex > index:
                 queueString += '✅'
-            queueString += f'  {index + 1}. {query["trackName"]} - _{", ".join(query["trackArtistNames"])}_\n\n'
+            queueString += f'  {index + 1}. {query["trackName"]} - _{", ".join(query["trackArtistNames"])}_\n    {Method.formatDuration(query["trackDuration"])}\n'
         await self.__createEmbed(
             context,
             'Queue',
@@ -153,27 +153,23 @@ class Embed:
             [],
             reaction,
             True,
+            color = discord.Color.red()
         )
 
-    async def text(self, context, text, reaction):
-        await self.__createText(context, text, reaction)
-    
     async def file(self, context, fileName, reaction):
-        asyncio.ensure_future(context.message.add_reaction('👌'))
         message = await context.send(
             file = discord.File(fileName),
         )
         asyncio.ensure_future(message.add_reaction(reaction))
 
-    async def __createEmbed(self, context, title: str, description: str, thumbnail:str, fields: list, reaction: str, isMonospaced: bool):
-        asyncio.ensure_future(context.message.add_reaction('👌'))
+    async def __createEmbed(self, context, title: str, description: str, thumbnail:str, fields: list, reaction: str, isMonospaced: bool, color = discord.Color.from_rgb(179, 136, 255)):
         embed = discord.Embed(
             title=title,
             description=description,
-            color=discord.Colour.random(),
+            color=color,
         )
         if thumbnail:
-            embed.set_image(url=thumbnail)
+            embed.set_thumbnail(url=thumbnail)
         for field in fields:
             embed.add_field(
                 name=field.title,
@@ -188,7 +184,6 @@ class Embed:
         asyncio.ensure_future(message.add_reaction(reaction))
     
     async def __createText(self, context, text: str, reaction: str):
-        asyncio.ensure_future(context.message.add_reaction('👌'))
         message = await context.send(text)
         asyncio.ensure_future(message.add_reaction(reaction))
 

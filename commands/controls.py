@@ -13,21 +13,14 @@ class Controls(Commands):
         if server.voiceConnection:
             if server.voiceConnection.is_playing():
                 server.pause()
-                await self.embed.text(
-                    ctx,
-                    'Paused Music. ⏸',
-                    '✅'
-                )
+                asyncio.ensure_future(ctx.message.add_reaction('⏸'))
             else:
                 server.resume()
-                await self.embed.text(
-                    ctx,
-                    'Resumed Music. ▶',
-                    '✅'
-                )
+                asyncio.ensure_future(ctx.message.add_reaction('▶'))
         else:
-            await self.embed.text(
+            await self.embed.exception(
                 ctx,
-                'Nothing is playing. ❌',
-                '❌'
+                'Invalid Command',
+                'Nothing is playing. 🎶',
+                '❌',
             )
