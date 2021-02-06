@@ -9,10 +9,8 @@ from pytube import YouTube, extract
 import pytube
 from ytmusicapi import YTMusic
 
-STREAM_ITAG = 251
 
-
-class YouTube(YouTube):
+class YT(YouTube):
     """
     Overrided parent's constructor.
     """
@@ -80,7 +78,7 @@ class YouTube(YouTube):
     
 
 
-class YTMusic(YTMusic):
+class YTM(YTMusic):
     def __init__(
         self,
         auth: str = None,
@@ -89,7 +87,7 @@ class YTMusic(YTMusic):
         language: str = "en",
     ):
         super().__init__(auth=auth, user=user, proxies=proxies, language=language)
-        self.youtube = YouTube()
+        self.youtube = YT()
 
     """
     This method is derived from BrowsingMixin.get_song.
@@ -113,7 +111,7 @@ class YTMusic(YTMusic):
         Get the stream URL using derieved YouTube class by parsing player_response & stream's ITAG.
         This method makes zero network requests (multiple additional requests being made by using vanilla PyTube & YTMusic). (*cough. Considering player JavaScript doesn't update out of nowhere)
         """
-        url = await self.youtube.getStream(player_response, STREAM_ITAG)
+        url = await self.youtube.getStream(player_response, 251)
         song_meta["url"] = url
         song_meta["category"] = player_response["microformat"][
             "playerMicroformatRenderer"
@@ -144,7 +142,7 @@ class YTMusic(YTMusic):
                 pass
         return song_meta
 
-    async def searchYoutube(self, query, filter):
+    async def searchYouTube(self, query, filter):
         return await self.__run(self.search, query, filter)
 
     async def getArtist(self, channelId):
@@ -158,10 +156,6 @@ class YTMusic(YTMusic):
 
     async def getLyrics(self, watchPlaylistId):
         return await self.__run(self.get_lyrics, watchPlaylistId)
-
-    """
-    Made run_in_executor method private.
-    """
 
     async def __run(self, method, *args):
         loop = asyncio.get_event_loop()
