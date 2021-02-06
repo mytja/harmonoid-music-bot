@@ -43,9 +43,15 @@ class Lifecycle:
                 continue
             ''' Track Playback '''
             track = server.queue[server.queueIndex]
+            if 'trackId' in server.queue[server.queueIndex].keys():
+                ''' Queue item is track. '''
+                trackFile = f'{server.queue[server.queueIndex]["trackId"]}.webm'
+            else:
+                ''' Queue item is video. '''
+                trackFile = f'{server.queue[server.queueIndex]["id"]}.webm'
             try:
                 server.voiceConnection.play(
-                    discord.FFmpegOpusAudio(f'{track["trackId"]}.webm'),
+                    discord.FFmpegOpusAudio(trackFile),
                     after = lambda exception: asyncio.run_coroutine_threadsafe(
                         Commands.listenUpdates(), Commands.bot.loop
                     ),
@@ -55,7 +61,7 @@ class Lifecycle:
                 try:
                     server.stop()
                     server.voiceConnection.play(
-                        discord.FFmpegOpusAudio(f'{track["trackId"]}.webm'),
+                        discord.FFmpegOpusAudio(trackFile),
                         after = lambda exception: asyncio.run_coroutine_threadsafe(
                             Commands.listenUpdates(), Commands.bot.loop
                         ),

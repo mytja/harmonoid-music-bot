@@ -125,13 +125,12 @@ class Playback(Commands):
                 'Could not add track to queue. 📑',
                 '❌'
             )
-        ''' Playing Track '''
 
     @commands.command(aliases=['py'])
     async def playYT(self, ctx, *, arg):
         if not (server := await Server.get(ctx)):
             return None
-        ''' Downloading Video '''
+        ''' Downloading Track '''
         try:
             video = await self.youtube.download(arg)
             if not video:
@@ -150,29 +149,27 @@ class Playback(Commands):
                 '❌'
             )
             return None
-        ''' Playing Video '''
-        voiceChannel = await server.connect()
         try:
-            voiceChannel.play(discord.FFmpegPCMAudio(f'{video["id"]}.webm'))
-        except:
-            try:
-                voiceChannel.stop()
-                voiceChannel.play(discord.FFmpegPCMAudio(f'{video["id"]}.webm'))
-            except:
-                await self.embed.exception(
-                    ctx,
-                    'Internal Error',
-                    f'Could not start player. 📻',
-                    '❌'
-                )
-                return None
-        ''' Displaying Metadata '''
-        try:
-            await self.embed.nowPlayingYT(ctx, video)
+            ''' Add To Queue '''
+            server.queue.append(video)
+            if not server.voiceConnection:
+                await server.connect()
+                ''' Run mainloop to notice server.voiceConnection. '''
+                await Commands.listenUpdates()
+            else:
+                if server.voiceConnection.is_playing():
+                    ''' Only add to queue if something is playing. '''
+                    await self.embed.addedToQueue(ctx, video)
+                else:
+                    ''' Run mainloop if something is not playing. '''
+                    server.queueIndex -= 1
+                    await Commands.listenUpdates()
+
+            
         except:
             await self.embed.exception(
                 ctx,
-                'Now Playing',
-                'Could not send video information.\nMusic is still playing. 😅',
-                '😅'
+                'Internal Error',
+                'Could not add video to queue. 📑',
+                '❌'
             )
