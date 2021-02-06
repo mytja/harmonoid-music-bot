@@ -6,36 +6,37 @@ from source.method import Method
 class Embed:
 
     async def nowPlaying(self, context, track):
-        await self.__createEmbed(
-            context,
-            'Now Playing',
-            f'**[{track["trackName"]}](https://music.youtube.com/watch?v={track["trackId"]})**',
-            track['albumArtHigh'],
-            [
-                EmbedField('Album', track['albumName'], True),
-                EmbedField('Year', track['year'], True),
-                EmbedField('Duration', Method.formatDuration(track['trackDuration']), True),
-                EmbedField('Artists', ', '.join(track['trackArtistNames']), False),
-            ],
-            '🎶',
-            True,
-        )
+        if 'trackName' in track.keys():
+            await self.__createEmbed(
+                context,
+                'Now Playing',
+                f'**[{track["trackName"]}](https://music.youtube.com/watch?v={track["trackId"]})**',
+                track['albumArtHigh'],
+                [
+                    EmbedField('Album', track['albumName'], True),
+                    EmbedField('Year', track['year'], True),
+                    EmbedField('Duration', Method.formatDuration(track['trackDuration']), True),
+                    EmbedField('Artists', ', '.join(track['trackArtistNames']), False),
+                ],
+                '🎶',
+                True,
+            )
+        else:
+            video = track
+            await self.__createEmbed(
+                context,
+                'Now Playing',
+                f'**[{video["title"]}]({video["link"]})**',
+                video['thumbnails'][-1]['url'],
+                [
+                    EmbedField('Channel', video['channel']['name'], False),
+                    EmbedField('Duration', Method.formatDuration(int(video['streamingData']['formats'][0]['approxDurationMs']) // 1000), True),
+                    EmbedField('Year', video['publishDate'].split('-')[0], True),
+                ],
+                '🎶',
+                True,
+            )
     
-    async def nowPlayingYT(self, context, video):
-        await self.__createEmbed(
-            context,
-            'Now Playing',
-            f'**[{video["title"]}]({video["link"]})**',
-            video['thumbnails'][-1]['url'],
-            [
-                EmbedField('Channel', video['channel']['name'], False),
-                EmbedField('Duration', Method.formatDuration(int(video['streamingData']['formats'][0]['approxDurationMs']) // 1000), True),
-                EmbedField('Year', video['publishDate'].split('-')[0], True),
-            ],
-            '🎶',
-            True,
-        )
-
     async def lyrics(self, context, lyrics):
         await self.__createEmbed(
             context,
@@ -56,36 +57,68 @@ class Embed:
         )
 
     async def addedToQueue(self, context, track):
-        await self.__createEmbed(
-            context,
-            'Added To Queue',
-            f'**[{track["trackName"]}](https://music.youtube.com/watch?v={track["trackId"]})**',
-            track['albumArtHigh'],
-            [
-                EmbedField('Album', track['albumName'], True),
-                EmbedField('Year', track['year'], True),
-                EmbedField('Duration', Method.formatDuration(track['trackDuration']), True),
-                EmbedField('Artists', ', '.join(track['trackArtistNames']), False),
-            ],
-            '📑',
-            True,
-        )
+        if 'trackName' in track.keys():
+            await self.__createEmbed(
+                context,
+                'Added To Queue',
+                f'**[{track["trackName"]}](https://music.youtube.com/watch?v={track["trackId"]})**',
+                track['albumArtHigh'],
+                [
+                    EmbedField('Album', track['albumName'], True),
+                    EmbedField('Year', track['year'], True),
+                    EmbedField('Duration', Method.formatDuration(track['trackDuration']), True),
+                    EmbedField('Artists', ', '.join(track['trackArtistNames']), False),
+                ],
+                '📑',
+                True,
+            )
+        else:
+            video = track
+            await self.__createEmbed(
+                context,
+                'Added To Queue',
+                f'**[{video["title"]}]({video["link"]})**',
+                video['thumbnails'][-1]['url'],
+                [
+                    EmbedField('Channel', video['channel']['name'], False),
+                    EmbedField('Duration', Method.formatDuration(int(video['streamingData']['formats'][0]['approxDurationMs']) // 1000), True),
+                    EmbedField('Year', video['publishDate'].split('-')[0], True),
+                ],
+                '🎶',
+                True,
+            )
 
     async def removedFromQueue(self, context, track):
-        await self.__createEmbed(
-            context,
-            'Removed From Queue',
-            f'**[{track["trackName"]}](https://music.youtube.com/watch?v={track["trackId"]})**',
-            None,
-            [
-                EmbedField('Album', track['albumName'], True),
-                EmbedField('Year', track['year'], True),
-                EmbedField('Duration', Method.formatDuration(track['trackDuration']), True),
-                EmbedField('Artists', ', '.join(track['trackArtistNames']), False),
-            ],
-            '📑',
-            True,
-        )
+        if 'trackName' in track.keys():
+            await self.__createEmbed(
+                context,
+                'Removed From Queue',
+                f'**[{track["trackName"]}](https://music.youtube.com/watch?v={track["trackId"]})**',
+                None,
+                [
+                    EmbedField('Album', track['albumName'], True),
+                    EmbedField('Year', track['year'], True),
+                    EmbedField('Duration', Method.formatDuration(track['trackDuration']), True),
+                    EmbedField('Artists', ', '.join(track['trackArtistNames']), False),
+                ],
+                '📑',
+                True,
+            )
+        else:
+            video = track
+            await self.__createEmbed(
+                context,
+                'Removed From Queue',
+                f'**[{video["title"]}]({video["link"]})**',
+                None,
+                [
+                    EmbedField('Channel', video['channel']['name'], False),
+                    EmbedField('Duration', Method.formatDuration(int(video['streamingData']['formats'][0]['approxDurationMs']) // 1000), True),
+                    EmbedField('Year', video['publishDate'].split('-')[0], True),
+                ],
+                '🎶',
+                True,
+            )
 
     async def queue(self, context, queue, queueIndex):
         if not queue:
@@ -104,7 +137,10 @@ class Embed:
                 queueString += '❎'
             elif queueIndex > index:
                 queueString += '✅'
-            queueString += f'  {index + 1}. {query["trackName"]} - _{", ".join(query["trackArtistNames"])}_\n    {Method.formatDuration(query["trackDuration"])}\n'
+            if 'trackName' in query.keys():
+                queueString += f'  {index + 1}. {query["trackName"]} - _{", ".join(query["trackArtistNames"])}_\n    {Method.formatDuration(query["trackDuration"])}\n'
+            else:
+                queueString += f'  {index + 1}. {query["title"]} - _{query["channel"]["name"]}_\n    {Method.formatDuration(int(query["streamingData"]["formats"][0]["approxDurationMs"]) // 1000)}\n'
         await self.__createEmbed(
             context,
             'Queue',
