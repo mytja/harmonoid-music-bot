@@ -12,74 +12,72 @@ class Lifecycle:
     @staticmethod
     async def update():
         for server in Commands.recognisedServers:
+            ''' Empty Queue '''
             if not server.queue:
                 continue
+            ''' Not In Voice Channel '''
+            if not server.voiceConnection:
+                continue
+            if not server.voiceConnection.is_playing():
+                ''' Track Completed '''
+                if server.queueIndex >= len(server.queue):
+                    continue
+                else:
+                    server.queueIndex += 1
+            elif type(server.modifiedQueueIndex) is int:
+                ''' Jump '''
+                if server.modifiedQueueIndex >= len(server.queue) or server.modifiedQueueIndex < 0:
+                    await Embed().exception(
+                        server.context,
+                        'Invalid Jump',
+                        f'No track is present at that index. 👀',
+                        '❌'
+                    )
+                    server.modifiedQueueIndex = None
+                    continue
+                else:
+                    server.queueIndex = server.modifiedQueueIndex
+                    server.modifiedQueueIndex = None
+            else:
+                ''' No Change '''
+                continue
+            ''' Track Playback '''
+            track = server.queue[server.queueIndex]
             try:
-                ''' Track Completed OR Jump '''
-                if (
-                    not server.voiceConnection.is_playing() or type(server.modifiedQueueIndex) is int
-                ):
-                    ''' Analysing Queue '''
-                    if server.modifiedQueueIndex is None:
-                        ''' Next Track On Completion '''
-                        server.queueIndex += 1
-                        if server.queueIndex >= len(server.queue):
-                            ''' Queue Completed '''
-                            continue
-                        else:
-                            track = server.queue[server.queueIndex]
-                    else:
-                        ''' Modified Index '''
-                        if server.modifiedQueueIndex >= len(server.queue) or server.modifiedQueueIndex < 0:
-                            await Embed().exception(
-                                server.context,
-                                'Invalid Jump',
-                                f'No track is present at that index. 👀',
-                                '❌'
-                            )
-                            server.modifiedQueueIndex = None
-                            continue
-                        else:
-                            server.queueIndex = server.modifiedQueueIndex
-                            track = server.queue[server.queueIndex]
-                            server.modifiedQueueIndex = None
-                    ''' Playing Track '''
-                    voiceChannel = await server.getVoiceChannel(server.context)
-                    try:
-                        voiceChannel.play(
-                            discord.FFmpegOpusAudio(f'{track["trackId"]}.webm'),
-                            after = lambda exception: asyncio.run_coroutine_threadsafe(
-                                Commands.listenUpdates(), Commands.bot.loop
-                            ),
-                        )
-                    except:
-                        try:
-                            voiceChannel.stop()
-                            voiceChannel.play(
-                                discord.FFmpegOpusAudio(f'{track["trackId"]}.webm'),
-                                after = lambda exception: asyncio.run_coroutine_threadsafe(
-                                    Commands.listenUpdates(), Commands.bot.loop
-                                ),
-                            )
-                        except:
-                            await Embed().exception(
-                                server.context,
-                                'Internal Error',
-                                f'Could not start player. 📻',
-                                '❌'
-                            )
-                    ''' Displaying Metadata '''
-                    try:
-                        await Embed().nowPlaying(server.context, track)
-                    except:
-                        await Embed().exception(
-                            server.context,
-                            'Now Playing',
-                            'Could not send track information.\nMusic is still playing. 👌',
-                            '👌'
-                        )
+                server.voiceConnection.play(
+                    discord.FFmpegOpusAudio(f'{track["trackId"]}.webm'),
+                    after = lambda exception: asyncio.run_coroutine_threadsafe(
+                        Commands.listenUpdates(), Commands.bot.loop
+                    ),
+                )
+                ''' Run mainloop after playback completion. '''
             except:
-                pass
+                try:
+                    server.stop()
+                    server.voiceConnection.play(
+                        discord.FFmpegOpusAudio(f'{track["trackId"]}.webm'),
+                        after = lambda exception: asyncio.run_coroutine_threadsafe(
+                            Commands.listenUpdates(), Commands.bot.loop
+                        ),
+                    )
+                    ''' Run mainloop after playback completion. '''
+                except:
+                    await Embed().exception(
+                        server.context,
+                        'Internal Error',
+                        f'Could not start player. 📻',
+                        '❌'
+                    )
+            ''' Displaying Metadata '''
+            try:
+                await Embed().nowPlaying(server.context, track)
+            except:
+                await Embed().exception(
+                    server.context,
+                    'Now Playing',
+                    'Could not send track information.\nMusic is still playing. 😅',
+                    '🎶'
+                )
 
 
 
@@ -101,36 +99,26 @@ class Commands(commands.Cog):
 
 class Server:
 
-    def __init__(self, context, serverId, voiceChannelId, textChannelId):
+    def __init__(self, context, serverId, textChannel, voiceChannel):
         self.context = context
         self.serverId = serverId
-        self.voiceChannelId = voiceChannelId
-        self.textChannelId = textChannelId
-        self.voiceChannel = None
-        self.textChannel = None
+        self.textChannel = textChannel
+        self.voiceChannel = voiceChannel
         self.voiceConnection = None
-        self.queueIndex = None
+        self.queueIndex = -1
         self.modifiedQueueIndex = None
         self.queue = []
 
-    async def getVoiceChannel(self, context):
-        if not self.voiceConnection:
-            self.voiceChannel = Commands.bot.get_channel(discord.utils.get(context.guild.channels, name='Music').id)
-            self.textChannel = Commands.bot.get_channel(self.textChannelId)
-            await self.connect()
-        return self.voiceConnection
-
     async def connect(self):
-        self.voiceConnection = await self.voiceChannel.connect()
+        if not self.voiceConnection:
+            self.voiceConnection = await self.voiceChannel.connect()
 
     async def disconnect(self):
         await self.voiceConnection.disconnect()
-        self.voiceChannel = None
-        self.textChannel = None
         self.voiceConnection = None
         self.queueIndex = None
         self.modifiedQueueIndex = None
-
+    
     def resume(self):
         self.voiceConnection.resume()
 
@@ -145,10 +133,24 @@ class Server:
         asyncio.ensure_future(context.message.add_reaction('👀'))
         for server in Commands.recognisedServers:
             if server.serverId == context.message.guild.id:
+                ''' Update textChannel where the newest command is detected. '''
+                server.textChannel = Commands.bot.get_channel(context.message.channel.id)
                 return server
-        try:
-            voiceChannelId = discord.utils.get(context.guild.channels, name='Music').id
-        except:
+        voiceChannelKey = discord.utils.get(context.guild.channels, name='Music')
+        if voiceChannelKey:
+            serverId = context.message.guild.id
+            textChannel = Commands.bot.get_channel(context.message.channel.id)
+            voiceChannel = Commands.bot.get_channel(voiceChannelKey.id)
+            Commands.recognisedServers.append(
+                Server(
+                    context,
+                    serverId,
+                    textChannel,
+                    voiceChannel,
+                )
+            )
+            return Commands.recognisedServers[-1]
+        else:
             await Embed().exception(
                 context,
                 'Information',
@@ -156,12 +158,3 @@ class Server:
                 '❌'
             )
             return None
-        Commands.recognisedServers.append(
-            Server(
-                context,
-                context.message.guild.id,
-                voiceChannelId,
-                context.message.channel.id,
-            )
-        )
-        return Commands.recognisedServers[-1]
