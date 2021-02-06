@@ -11,3 +11,9 @@ class About(Commands):
         if not (server := await Server.get(ctx)):
             return None
         await self.embed.about(ctx)
+
+    @commands.command(aliases=['s'])
+    async def status(self, ctx):
+        if not (server := await Server.get(ctx)):
+            return None
+        await self.embed.status(ctx, Commands)
