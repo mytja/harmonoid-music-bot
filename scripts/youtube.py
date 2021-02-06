@@ -9,11 +9,14 @@ class YouTube:
         self.streamURL = StreamURLFetcher()
 
     async def download(self, videoName: str) -> dict:
-        ''' Searching Video '''
-        video = await self.__getVideo(videoName)
-        if not video:
-            return None
-        videoId = video['id']
+        if 'youtu' not in videoName:
+            ''' Searching Video '''
+            video = await self.__getVideo(videoName)
+            if not video:
+                return None
+            videoId = video['id']
+        else:
+            videoId = self.__getVideoId(videoName)
         ''' Getting Stream URL '''
         video = await Video.get(videoId)
         videoUrl = await self.streamURL.get(video, 251)
@@ -36,6 +39,18 @@ class YouTube:
             return video
         else:
             return None
+            
+    def __getVideoId(self, videoLink: str) -> str:
+        if 'youtu.be' in videoLink:
+            if videoLink[-1] == '/':
+                return videoLink.split('/')[-2]
+            return videoLink.split('/')[-1]
+        elif 'youtube.com' in videoLink:
+            if '&' not in videoLink:
+                return videoLink[videoLink.index('v=') + 2:]
+            return videoLink[videoLink.index('v=') + 2: videoLink.index('&')]
+        else:
+            return videoLink
 
     async def __getVideo(self, videoName):
         search = VideosSearch(videoName, limit=1)
