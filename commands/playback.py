@@ -109,8 +109,14 @@ class Playback(Commands):
                 ''' Run mainloop to notice server.voiceConnection. '''
                 await Commands.listenUpdates()
             else:
-                ''' Show addedToQueue if already connected to voiceChannel. '''
-                await self.embed.addedToQueue(ctx, track)
+                if server.voiceConnection.is_playing():
+                    ''' Only add to queue if something is playing. '''
+                    await self.embed.addedToQueue(ctx, track)
+                else:
+                    ''' Run mainloop if something is not playing. '''
+                    server.queueIndex -= 1
+                    await Commands.listenUpdates()
+
             
         except:
             await self.embed.exception(
