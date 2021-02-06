@@ -122,7 +122,7 @@ class Server:
     async def disconnect(self):
         await self.voiceConnection.disconnect()
         self.voiceConnection = None
-        self.queueIndex = None
+        self.queueIndex = -1
         self.modifiedQueueIndex = None
     
     def resume(self):

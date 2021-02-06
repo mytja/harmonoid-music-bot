@@ -180,6 +180,37 @@ class Embed:
             False,
         )
 
+    async def status(self, context, commands):
+        import ytmusicapi
+        import youtubesearchpython
+        import httpx
+        import pytube
+        import aiofiles
+        import nacl
+        async with aiofiles.open('runtime.txt') as file:
+            runtime = await file.read()
+        playingMusicOnServers = 0
+        for server in commands.recognisedServers:
+            if server.voiceConnection:
+                if server.voiceConnection.is_playing():
+                    playingMusicOnServers += 1
+        await self.__createEmbed(
+            context,
+            'Status',
+            f'Information about Harmonoid Music Bot.',
+            None,
+            [
+                EmbedField('Total Servers', f'{len(commands.bot.guilds)} servers', inline = False),
+                EmbedField('Recognized Servers', f'{len(commands.recognisedServers)} servers', inline = False),
+                EmbedField('Playing Music On', f'{playingMusicOnServers} servers', inline = False),
+                EmbedField('This Server', f'{context.message.guild.name} in {context.message.channel.mention} channel.', inline = False),
+                EmbedField('Dependencies', f'\ndiscord.py {discord.__version__}\nytmusicapi {ytmusicapi.__version__}\nyoutube-search-python {youtubesearchpython.__version__}\npytube {pytube.__version__}\nhttpx {httpx.__version__}\naiofiles {aiofiles.__version__}\npynacl {nacl.__version__}''', inline = False),
+                EmbedField('Runtime', f'{runtime}', inline = False),
+            ],
+            'ℹ',
+            False,
+        )
+
     async def exception(self, context, title, exception, reaction):
         await self.__createEmbed(
             context,
