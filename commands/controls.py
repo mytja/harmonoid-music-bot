@@ -24,3 +24,4 @@ class Controls(Commands):
                 'Nothing is playing. 🎶',
                 '❌',
             )
+    

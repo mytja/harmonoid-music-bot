@@ -114,6 +114,7 @@ class Server:
         self.queueIndex = -1
         self.modifiedQueueIndex = None
         self.queue = []
+        self.configVoice = "Music"
 
     async def connect(self):
         if not self.voiceConnection:
@@ -142,7 +143,7 @@ class Server:
                 ''' Update textChannel where the newest command is detected. '''
                 server.textChannel = Commands.bot.get_channel(context.message.channel.id)
                 return server
-        voiceChannelKey = discord.utils.get(context.guild.channels, name='Music')
+        voiceChannelKey = discord.utils.get(context.guild.channels, name=Server.configVoice)
         if voiceChannelKey:
             serverId = context.message.guild.id
             textChannel = Commands.bot.get_channel(context.message.channel.id)
@@ -160,7 +161,7 @@ class Server:
             await Embed().exception(
                 context,
                 'Information',
-                'Please make a voice channel with name "Music" first. 🔧',
+                f'Please make a voice channel with name "{self.configVoice}" first. 🔧',
                 '❌'
             )
             return None
