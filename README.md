@@ -34,12 +34,13 @@ You can deploy it to Heroku or a self hosted machine.
 | -clear                  | -c                  | Clears current queue                                                                      |
 
 # General commands
-| Command                 | Aliases             | What does it do                                                                           |
-|-------------------------|---------------------|-------------------------------------------------------------------------------------------|
-| -status                 | -s                  | Displays server status/statistics                                                         |
-| -about                  | -a                  | Displays an about dialog                                                                  |
-| -lyrics <song name>     |                     | Sends lyrics of the song into the chat if he finds them                                   |
-| -lyricsSend <song name> |                     | Sends lyrics of the song into the chat in .txt document if he finds them                  |
+| Command                          | Aliases             | What does it do                                                                           |
+|----------------------------------|---------------------|-------------------------------------------------------------------------------------------|
+| -status                          | -s                  | Displays server status/statistics                                                         |
+| -about                           | -a                  | Displays an about dialog                                                                  |
+| -lyrics <song name>              |                     | Sends lyrics of the song into the chat if he finds them                                   |
+| -lyricsSend <song name>          |                     | Sends lyrics of the song into the chat in .txt document if he finds them                  |
+| -confvcname <voice channel name> | -cvcname            | Changes Voice Channel in which it plays music                                             |
 
 # :heart: Special thanks to this people & organisations
 - [sigmatics](https://github.com/sigma67) for [ytmusicapi](https://github.com/sigma67/ytmusicapi)
