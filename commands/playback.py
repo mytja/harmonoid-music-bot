@@ -1,6 +1,5 @@
 from commands import *
 
-
 class Playback(Commands):
     def __init__(self):
         super().__init__(Commands.bot)
@@ -132,7 +131,10 @@ class Playback(Commands):
             return None
         ''' Downloading Track '''
         try:
-            video = await self.youtube.download(arg)
+            videoData = await self.youtube.__getVideo(arg)
+            videoId = videoData["result"][0]["id"]
+            video = await self.youtube.VideoGet("https://youtube.com/watch?v="+videoId)
+            videoUrl = self.youtube.fetchURL(video, 251)
             if not video:
                 await self.embed.exception(
                     ctx,

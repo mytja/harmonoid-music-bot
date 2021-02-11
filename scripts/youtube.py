@@ -7,6 +7,13 @@ from youtubesearchpython.__future__ import Video, VideosSearch, StreamURLFetcher
 class YouTube:
     def __init__(self):
         self.streamURL = StreamURLFetcher()
+    
+    async def VideoGet(self, url):
+        video = await Video.get(url)
+        return video
+    
+    def fetchURL(self, video, id):
+        return self.streamURL.get(video, id)
 
     async def download(self, videoName: str) -> dict:
         if 'youtu' not in videoName:
