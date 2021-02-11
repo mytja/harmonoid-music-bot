@@ -187,8 +187,12 @@ class Embed:
         import pytube
         import aiofiles
         import nacl
-        async with aiofiles.open('runtime.txt') as file:
-            runtime = await file.read()
+        try:
+            async with aiofiles.open('runtime.txt') as file:
+                runtime = await file.read()
+        except:
+            import sys
+            runtime = sys.version
         playingMusicOnServers = 0
         for server in commands.recognisedServers:
             if server.voiceConnection:

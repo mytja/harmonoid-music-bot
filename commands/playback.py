@@ -13,6 +13,17 @@ class Playback(Commands):
             server.queue,
             server.queueIndex,
         )
+    
+    @commands.command(aliases=["config vcname", "cvcname"])
+    async def confvcname(self, ctx, *, arg):
+        server = Server
+        server.configVoice = arg
+        await self.embed.exception(
+            ctx,
+            'Voice channel change',
+            f'Voice channel name successfully changed to {arg}.',
+            '✓',
+        )
 
     @commands.command(aliases=['n'])
     async def next(self, ctx):
