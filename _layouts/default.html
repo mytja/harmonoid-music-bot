@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang | default: "en-US" }}">
+  <head>
+
+    {% if site.google_analytics %}
+      <script async src="https://www.googletagmanager.com/gtag/js?id={{ site.google_analytics }}"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '{{ site.google_analytics }}');
+      </script>
+    {% endif %}
+    <meta charset="UTF-8">
+
+{% seo %}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#6200EA">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
+  </head>
+  <body>
+    <header class="page-header" role="banner">
+      <h1 class="project-name">Harmonoid</h1>
+      <h2 class="project-tagline">🎵 The music app, you always dreamt</h2>
+      <a href="https://discord.gg/mRxH9zYkGy/" class="btn">☕ Join Discord</a>
+      <a href="https://github.com/alexmercerind/harmonoid/releases/download/v0.0.2%2B2/harmonoid-v0.0.2+2-pre-release.apk" class="btn">⚡ Download App</a>
+      <a href="https://github.com/alexmercerind/harmonoid" class="btn">⭐ Star On GitHub</a>
+    </header>
+
+    <main id="content" class="main-content" role="main">
+      {{ content }}
+
+      <footer class="site-footer">
+        {% if site.github.is_project_page %}
+          <span class="site-footer-owner"><a href="https://github.com/alexmercerind/harmonoid">harmonoid</a> is written by <a href="https://github.com/alexmercerind">alexmercerind</a> 💙.</span>
+        {% endif %}
+      </footer>
+    </main>
+  </body>
+</html>
