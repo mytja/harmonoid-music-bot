@@ -1,6 +1,8 @@
 # harmonoid-music-bot
 Harmonoid bot for Discord, that plays your favorite music, manages queue, sends lyrics, and much more...
 
+# [Test me on Harmonoid's Discord server](https://discord.gg/mRxH9zYkGy/)
+
 ## [Add me to your server](https://discord.com/oauth2/authorize?client_id=802600265005137980&scope=bot&permissions=36932608)
 
 # Deploying it yourself
