@@ -142,10 +142,10 @@ class Playback(Commands):
             return None
         ''' Downloading Track '''
         try:
-            videoData = await self.youtube.__getVideo(arg)
-            videoId = videoData["result"][0]["id"]
+            videoData = await self.youtube.getVideo(arg)
+            videoId = videoData["id"]
             video = await self.youtube.VideoGet("https://youtube.com/watch?v="+videoId)
-            videoUrl = self.youtube.fetchURL(video, 251)
+            videoUrl = await self.youtube.fetchURL(video, 251)
             if not video:
                 await self.embed.exception(
                     ctx,
@@ -176,9 +176,7 @@ class Playback(Commands):
                 else:
                     ''' Run mainloop if something is not playing. '''
                     server.queueIndex -= 1
-                    await Commands.listenUpdates()
-
-            
+                    await Commands.listenUpdates()  
         except:
             await self.embed.exception(
                 ctx,

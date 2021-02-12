@@ -50,7 +50,7 @@ class Lifecycle:
                 ''' Queue item is video. '''
                 trackFile = f'{server.queue[server.queueIndex]["id"]}.webm'
             FFMPEG_OPTS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
-            url = YouTube().fetchURL(server.queue[server.queueIndex], 251)
+            url = await YouTube().fetchURL(server.queue[server.queueIndex], 251)
             try:
                 server.voiceConnection.play(
                     discord.FFmpegOpusAudio(url, **FFMPEG_OPTS),

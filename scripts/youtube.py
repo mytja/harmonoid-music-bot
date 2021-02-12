@@ -12,8 +12,9 @@ class YouTube:
         video = await Video.get(url)
         return video
     
-    def fetchURL(self, video, id):
-        return self.streamURL.get(video, id)
+    async def fetchURL(self, video, id):
+        url = await self.streamURL.get(video, id)
+        return url
 
     async def download(self, videoName: str) -> dict:
         if 'youtu' not in videoName:
@@ -60,6 +61,11 @@ class YouTube:
             return videoLink
 
     async def __getVideo(self, videoName):
+        search = VideosSearch(videoName, limit=1)
+        result = await search.next()
+        return result['result'][0]
+    
+    async def getVideo(self, videoName):
         search = VideosSearch(videoName, limit=1)
         result = await search.next()
         return result['result'][0]
