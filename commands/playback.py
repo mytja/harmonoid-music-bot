@@ -14,17 +14,6 @@ class Playback(Commands):
             server.queue,
             server.queueIndex,
         )
-    
-    @commands.command(aliases=["config vcname", "cvcname"])
-    async def confvcname(self, ctx, *, arg):
-        server = Server
-        server.configVoice = arg
-        await self.embed.exception(
-            ctx,
-            'Voice channel change',
-            f'Voice channel name successfully changed to {arg}.',
-            '✓',
-        )
 
     @commands.command(aliases=['n'])
     async def next(self, ctx):
@@ -114,21 +103,22 @@ class Playback(Commands):
             return None
         try:
             ''' Add To Queue '''
-            server.queue.append(track)
-            if not server.voiceConnection:
-                await server.connect()
-                ''' Run mainloop to notice server.voiceConnection. '''
-                await Commands.listenUpdates()
-            else:
-                if server.voiceConnection.is_playing():
-                    ''' Only add to queue if something is playing. '''
-                    await self.embed.addedToQueue(ctx, track)
-                else:
-                    ''' Run mainloop if something is not playing. '''
-                    server.queueIndex -= 1
+            try:
+                server.queue.append(track)
+                if not server.voiceConnection:
+                    await server.connect()
+                    ''' Run mainloop to notice server.voiceConnection. '''
                     await Commands.listenUpdates()
-
-            
+                else:
+                    if server.voiceConnection.is_playing():
+                        ''' Only add to queue if something is playing. '''
+                        await self.embed.addedToQueue(ctx, track)
+                    else:
+                        ''' Run mainloop if something is not playing. '''
+                        server.queueIndex -= 1
+                        await Commands.listenUpdates()
+            except Exception as exception:
+                print(exception)
         except:
             await self.embed.exception(
                 ctx,
@@ -174,9 +164,7 @@ class Playback(Commands):
                 else:
                     ''' Run mainloop if something is not playing. '''
                     server.queueIndex -= 1
-                    await Commands.listenUpdates()
-
-            
+                    await Commands.listenUpdates()    
         except:
             await self.embed.exception(
                 ctx,
