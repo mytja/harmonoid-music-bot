@@ -18,7 +18,21 @@ class Lifecycle:
             ''' Not In Voice Channel '''
             if not server.voiceConnection:
                 continue
-            if not server.voiceConnection.is_playing():
+            if not server.voiceConnection.is_playing() and type(server.modifiedQueueIndex) is int:
+                ''' Jump on the completion of queue. '''
+                if server.modifiedQueueIndex >= len(server.queue) or server.modifiedQueueIndex < 0:
+                    await Embed().exception(
+                        server.context,
+                        'Invalid Jump',
+                        f'No track is present at that index. 👀',
+                        '❌'
+                    )
+                    server.modifiedQueueIndex = None
+                    continue
+                else:
+                    server.queueIndex = server.modifiedQueueIndex
+                    server.modifiedQueueIndex = None
+            elif not server.voiceConnection.is_playing():
                 ''' Track Completed '''
                 if server.queueIndex >= len(server.queue):
                     continue
