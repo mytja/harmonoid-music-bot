@@ -1,50 +1,76 @@
-# harmonoid-music-bot
-Harmonoid bot for Discord, that plays your favorite music, manages queue, sends lyrics, and much more...
+<h1 align='center'><a href='https://github.com/harmonoid/harmonoid-music-bot'>Harmonoid Music Bot</a></h1>
+<h4 align='center'>🎵 Music bot for Discord. Supports lyrics, queues & plays using both YT Music & YouTube.</h4>
+<p align='center'><a href='https://discord.com/oauth2/authorize?client_id=802600265005137980&scope=bot&permissions=36932608'>Invite</a> | <a href='https://discord.com/invite/ZG7Pj9SREG'>Discord</a> | <a href='https://harmonoid.github.io/harmonoid-music-bot'>Website</a></p>
 
-# [Test me on Harmonoid's Discord server](https://discord.gg/mRxH9zYkGy/)
+<table>
+  <tr>
+    <td><img src='https://github.com/harmonoid/harmonoid-music-bot/blob/screenshots/1.PNG?raw=true'></img></td>
+    <td><img src='https://github.com/harmonoid/harmonoid-music-bot/blob/screenshots/2.PNG?raw=true'></img></td>
+    <td><img src='https://github.com/harmonoid/harmonoid-music-bot/blob/screenshots/3.PNG?raw=true'></img></td>
+  </tr>
+</table>
 
-## [Add me to your server](https://discord.com/oauth2/authorize?client_id=802600265005137980&scope=bot&permissions=36932608)
+## 💜 Support
 
-# Deploying it yourself
-Please note, that link for adding it to server is strictly intended for personal & non-commercial use. You are responsible for any non-intended & not-legal usage of this bot and/or server.
+You may join our [Discord](https://discord.com/invite/ZG7Pj9SREG) server to provide feedback, report bugs in the bot or just chill.
 
-You can deploy it to Heroku or a self hosted machine.
+## 🎵 Invite
 
-## Deploying to Heroku
-1. Create an account on Heroku if you don't have it yet
-2. Create an app
-3. Create a fork of our repo on GitHub & Deploy it on Heroku
-4. Get a Discord Bot Token from Discord
-5. Add a secret key called DISCORD_TOKEN with value of a discord token, you got earlier, to Heroku app
-6. Flip a toggle switch on main page of your app
+To use me in your server, use [this](https://discord.com/oauth2/authorize?client_id=802600265005137980&scope=bot&permissions=36932608) link to invite me.
 
-# Playing commands
-| Command                 | Aliases             | What does it do                                                                           |
-|-------------------------|---------------------|-------------------------------------------------------------------------------------------|
-| -play <song name>       | -p                  | Adds a track from YouTube Music to queue                                                  |
-| -playYT <song name>     | -py                 | Adds a track from YouTube to queue                                                        |
-| -togglePlayback         | -pp                 | Pauses or resumes playing song, depending on if song is playing                           |
+## 🎹 Commands
 
-# Queue commands
-| Command                 | Aliases             | What does it do                                                                           |
-|-------------------------|---------------------|-------------------------------------------------------------------------------------------|
-| -queue                  | -q                  | Displays a current queue                                                                  |
-| -next                   | -n                  | Jumps onto next song in queue                                                             |
-| -back                   | -b                  | Jumps one song back on queue                                                              |
-| -jump <song ID>         | -j                  | Jumps onto a song ID you gave in the command in the queue                                 |
-| -delete <song ID>       | -d                  | Deletes a song with ID you gave in the command from queue                                 |
-| -clear                  | -c                  | Clears current queue                                                                      |
+### 🎵 Playback Commands
 
-# General commands
-| Command                          | Aliases             | What does it do                                                                           |
-|----------------------------------|---------------------|-------------------------------------------------------------------------------------------|
-| -status                          | -s                  | Displays server status/statistics                                                         |
-| -about                           | -a                  | Displays an about dialog                                                                  |
-| -lyrics <song name>              |                     | Sends lyrics of the song into the chat if he finds them                                   |
-| -lyricsSend <song name>          |                     | Sends lyrics of the song into the chat in .txt document if he finds them                  |
-| -confvcname <voice channel name> | -cvcname            | Changes Voice Channel in which it plays music                                             |
+| Command                     | Aliases  | Action                                                                                    |
+|-----------------------------|----------|-------------------------------------------------------------------------------------------|
+| -play   <song name or link> | -p       | Plays or adds a track to queue from YouTube Music.                                        |
+| -playYT <song name or link> | -py      | Plays or adds a track to queue from YouTube.                                              |
+| -pause                      |          | Pauses playback.                                                                          |
+| -resume                     |          | Resumes playback.                                                                         |
+| -togglePlayback             | -pp      | Switches between pause & play states.                                                     |
 
-# :heart: Special thanks to this people & organisations
+### 📑 Queue Commands
+
+| Command                 | Aliases  | Action                                                                                    |
+|-------------------------|----------|-------------------------------------------------------------------------------------------|
+| -queue                  | -q       | Displays the current queue.                                                               |
+| -next                   | -n       | Jumps to next track in the queue.                                                         |
+| -back                   | -b       | Jumps to previous track in the queue.                                                     |
+| -jump   <position>      | -j       | Jumps to specific track in the queue based on its position.                               |
+| -delete <position>      | -d       | Removes track from the queue from the given position.                                     |
+| -clear                  | -c       | Clears the queue.                                                                         |
+  
+### 🧰 Utility Commands
+
+| Command                             | Aliases  | Action                                                                                    |
+|-------------------------------------|----------|-------------------------------------------------------------------------------------------|
+| -lyrics     <song name>             | -l       | Shows lyrics of a track.                                                                  |
+| -lyricsSend <song name>             | -ls      | Sends lyrics of a track in a TXT file.                                                    |
+| -changeChannel <voice channel name> | -cc      | Changes voice channel where music should be played.                                       |
+
+### 📖 Other Commands
+
+| Command                             | Aliases  | Action                                                                                    |
+|-------------------------------------|----------|-------------------------------------------------------------------------------------------|
+| -status                             | -s       | Displays bot's statistics.                                                                |
+| -about                              | -a       | Displays information about bot.                                                           |
+
+## 🔐 Deploy Personally
+
+You can deploy this bot on Heroku or on a self hosted machine.
+
+#### Deploying to Heroku
+- Create an account on Heroku if you don't have it yet
+- Create an app
+- Create a fork of our repo on GitHub & Deploy it on Heroku
+- Get a Discord Bot Token from Discord
+- Add a secret key called DISCORD_TOKEN with value of a discord token, you got earlier, to Heroku app
+- Flip a toggle switch on main page of your app
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+
+## ⭐ Acknowledgements
 - [sigmatics](https://github.com/sigma67) for [ytmusicapi](https://github.com/sigma67/ytmusicapi)
 - [PyTube](https://github.com/pytube) for [PyTube](https://github.com/pytube/pytube)
 - [Encode](https://github.com/encode) for [httpx](https://github.com/encode/httpx)
