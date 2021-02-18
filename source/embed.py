@@ -1,5 +1,6 @@
 import discord
 import asyncio
+from source.method import Method
 from constants import Constants
 
 
