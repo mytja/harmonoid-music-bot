@@ -260,7 +260,7 @@ class Embed:
                 ),
             ],
             'ℹ',
-            True,
+            False,
         )
 
     async def status(self, context, commands):
