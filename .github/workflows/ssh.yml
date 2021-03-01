@@ -16,4 +16,4 @@ jobs:
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
         port: ${{ secrets.PORT }}
-        script: sh harmonoid-bot.sh && sudo shutdown --reboot +1 "System is going down for reboot in 1 minute"
+        script: sh harmonoid-bot.sh && shutdown --reboot +1 "System is going down for reboot in 1 minute"
