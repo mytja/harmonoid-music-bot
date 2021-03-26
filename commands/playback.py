@@ -15,7 +15,7 @@ class Playback(Commands):
             server.queueIndex,
         )
 
-    @commands.command(aliases=['n'])
+    @commands.command(aliases=['n', 's'])
     async def next(self, ctx):
         if not (server := await Server.get(ctx)):
             return None

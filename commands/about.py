@@ -6,7 +6,7 @@ class About(Commands):
     def __init__(self):
         super().__init__(Commands.bot)
         
-    @commands.command(aliases=['a'])
+    @commands.command()
     async def about(self, ctx):
         if not (server := await Server.get(ctx)):
             return None
@@ -18,7 +18,7 @@ class About(Commands):
             return None
         await self.embed.help(ctx)
 
-    @commands.command(aliases=['s'])
+    @commands.command()
     async def status(self, ctx):
         if not (server := await Server.get(ctx)):
             return None

@@ -4,78 +4,8 @@ import codecs
 from typing import Dict
 from urllib.parse import parse_qs
 import json
-from pytube.__main__ import apply_descrambler, apply_signature
-from pytube import YouTube, extract
-import pytube
 from ytmusicapi import YTMusic
-
-
-class YT(YouTube):
-    """
-    Overrided parent's constructor.
-    """
-
-    def __init__(self):
-        self._js_url = None
-        self._js = None
-
-    async def getStream(self, playerResponse: dict, itag: int):
-        """
-        Saving playerResponse inside a dictionary with key "player_response" for apply_descrambler & apply_signature methods.
-        """
-        self._player_response = {"player_response": playerResponse}
-        self.video_id = playerResponse["videoDetails"]["videoId"]
-        await self.decipher()
-        for stream in self._player_response["url_encoded_fmt_stream_map"]:
-            if stream["itag"] == itag:
-                return stream["url"]
-
-    """
-    This method is derived from YouTube.prefetch.
-    This method fetches player JavaScript & its URL from /watch endpoint on YouTube.
-    Removed unnecessary methods & web requests as we already have metadata.
-    Uses httpx.AsyncClient in place of requests.
-    """
-
-    async def getJS(self) -> None:
-        async with httpx.AsyncClient() as client:
-            """
-            Removed v parameter from the query. (No idea about why PyTube bothered with that)
-            """
-            response = await client.get("https://www.youtube.com/", timeout=None)
-            watch_html = response.text
-        self._js_url = extract.js_url(watch_html)
-        if pytube.__js_url__ != self._js_url:
-            async with httpx.AsyncClient() as client:
-                response = await client.get(self._js_url, timeout=None)
-                self._js = response.text
-            pytube.__js__ = self._js
-            pytube.__js_url__ = self._js_url
-        else:
-            self._js = pytube.__js__
-
-    async def decipher(self, retry: bool = False):
-        """
-        Not fetching for new player JavaScript if pytube.__js__ is not None or exception is not caused.
-        """
-        if not pytube.__js__ or retry:
-            await self.getJS()
-        try:
-            """
-            These two are the main methods being used from PyTube.
-            Used to decipher the stream URLs using player JavaScript & the player_response passed from the getStream method of this derieved class.
-            These methods operate on the value of "player_response" key in dictionary of self._player_response & save deciphered information in the "url_encoded_fmt_stream_map" key.
-            """
-            loop = asyncio.get_running_loop()
-            await loop.run_in_executor(None, apply_descrambler, self._player_response, "url_encoded_fmt_stream_map")
-            await loop.run_in_executor(None, self._player_response, "url_encoded_fmt_stream_map", pytube.__js__)
-        except:
-            """
-            Fetch updated player JavaScript to get new cipher algorithm.
-            """
-            await self.decipher(retry=True)
-    
-
+from youtubesearchpython.__future__ import StreamURLFetcher
 
 class YTM(YTMusic):
     def __init__(
@@ -86,7 +16,7 @@ class YTM(YTMusic):
         language: str = "en",
     ):
         super().__init__(auth=auth, user=user, proxies=proxies, language=language)
-        self.youtube = YT()
+        self.fetcher = StreamURLFetcher()
 
     """
     This method is derived from BrowsingMixin.get_song.
@@ -110,8 +40,7 @@ class YTM(YTMusic):
         Get the stream URL using derieved YouTube class by parsing player_response & stream's ITAG.
         This method makes zero network requests (multiple additional requests being made by using vanilla PyTube & YTMusic). (*cough. Considering player JavaScript doesn't update out of nowhere)
         """
-        url = await self.youtube.getStream(player_response, 251)
-        song_meta["url"] = url
+        song_meta["url"] = await self.fetcher.get({"id": videoId, "streamingData": player_response["streamingData"]}, 251)
         song_meta["category"] = player_response["microformat"][
             "playerMicroformatRenderer"
         ]["category"]
