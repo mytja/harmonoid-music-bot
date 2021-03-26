@@ -93,7 +93,8 @@ class Playback(Commands):
                     '❌'
                 )
                 return None
-        except:
+        except Exception as exception:
+            print(exception)
             await self.embed.exception(
                 ctx,
                 'No Result',
