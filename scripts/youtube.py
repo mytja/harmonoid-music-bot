@@ -1,7 +1,8 @@
 import httpx
 import os
 import aiofiles
-from youtubesearchpython.__future__ import Video, VideosSearch, StreamURLFetcher
+from youtubesearchpython.__future__ import VideosSearch
+from youtubesearchpython import Video, StreamURLFetcher
 
 
 class YouTube:
@@ -26,11 +27,11 @@ class YouTube:
         else:
             videoId = self.__getVideoId(videoName)
         ''' Getting Stream URL '''
-        video = await Video.get(videoId)
-        videoUrl = await self.streamURL.get(video, 251)
+        video = Video.get(videoId)
+        videoUrl = self.streamURL.get(video, 251)
         if not videoUrl:
             ''' Fallback AAC '''
-            videoUrl = await self.streamURL.get(video, 140)
+            videoUrl = self.streamURL.get(video, 140)
         if os.path.isfile(f'{videoId}.webm'):
             return video
         elif type(video) is dict:
@@ -61,11 +62,6 @@ class YouTube:
             return videoLink
 
     async def __getVideo(self, videoName):
-        search = VideosSearch(videoName, limit=1)
-        result = await search.next()
-        return result['result'][0]
-    
-    async def getVideo(self, videoName):
         search = VideosSearch(videoName, limit=1)
         result = await search.next()
         return result['result'][0]

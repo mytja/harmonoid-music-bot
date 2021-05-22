@@ -1,6 +1,7 @@
 import discord
 import asyncio
 from source.method import Method
+from constants import Constants
 
 
 class Embed:
@@ -160,23 +161,106 @@ class Embed:
         await self.__createEmbed(
             context,
             'About',
-            '''
-            Hello! 👋
-            I'm Harmonoid Music Bot. 
-            I can play music for you & get lyrics. 🎉
-            I play music from both YouTube music & YouTube unlike other bots.
-            You may join our discord server from the link below to provide feedback or just chill with us.
-
-            Thankyou,
-            Harmonoid project developers.
-            ''',
+            Constants.description,
             'https://avatars.githubusercontent.com/u/75374037?s=200&v=4',
             [
                 EmbedField('Support', 'Discord Server: [Join](https://discord.gg/ZG7Pj9SREG)\nSource Code: [Contribute](https://github.com/harmonoid/harmonoid-music-bot)', False),
-                EmbedField('Version', 'beta-1.0.0', False),
+                EmbedField('Version', Constants.version, False),
                 EmbedField('Developers', developers, False),
             ],
             '💜',
+            False,
+        )
+
+    async def help(self, context):
+        await self.__createEmbed(
+            context,
+            'Help',
+            'Information about all the commands',
+            'https://avatars.githubusercontent.com/u/75374037?s=200&v=4',
+            [
+                EmbedField(
+                    '-play <song name or link>',
+                    '-p <song name or link>\nPlays or adds a track to queue from YouTube Music.',
+                    False,
+                ),
+                EmbedField(
+                    '-playYT <song name or link>',
+                    '-py <song name or link>\nPlays or adds a track to queue from YouTube.',
+                    False,
+                ),
+                EmbedField(
+                    '-pause',
+                    'Pauses playback. Recommended to use -pp instead.',
+                    False,
+                ),
+                EmbedField(
+                    '-resume',
+                    'Resumes playback. Recommended to use -pp instead.',
+                    False,
+                ),
+                EmbedField(
+                    '-togglePlayback',
+                    '-pp\nSwitches between pause & play states.',
+                    False,
+                ),
+                EmbedField(
+                    '-queue',
+                    '-q\nDisplays the current queue.',
+                    False,
+                ),
+                EmbedField(
+                    '-next',
+                    '-n\nJumps to next track in the queue.',
+                    False,
+                ),
+                EmbedField(
+                    '-back',
+                    '-b\nJumps to previous track in the queue.',
+                    False,
+                ),
+                EmbedField(
+                    '-jump <position in queue>',
+                    '-j <position in queue>\nJumps to specific track in the queue based on its position.',
+                    False,
+                ),
+                EmbedField(
+                    '-delete <position in queue>',
+                    '-d <position in queue>\nRemoves track from the queue from the given position.',
+                    False,
+                ),
+                EmbedField(
+                    '-clear',
+                    '-c\nClears the queue.',
+                    False,
+                ),
+                EmbedField(
+                    '-lyrics <song name or link>',
+                    '-l\nShows lyrics of a track.',
+                    False,
+                ),
+                EmbedField(
+                    '-lyricsSend <song name or link>',
+                    '-ls\nSends lyrics of a track in a TXT file.',
+                    False,
+                ),
+                EmbedField(
+                    '-changeChannel <voice channel name>',
+                    '-cc <voice channel name>\nChanges voice channel where music should be played.',
+                    False,
+                ),
+                EmbedField(
+                    '-status',
+                    '-s\nDisplays statistics of the bot.',
+                    False,
+                ),
+                EmbedField(
+                    '-about',
+                    '-a\nDisplays information about bot & developer support.',
+                    False,
+                ),
+            ],
+            'ℹ',
             False,
         )
 

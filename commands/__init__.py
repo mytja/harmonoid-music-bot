@@ -18,7 +18,21 @@ class Lifecycle:
             ''' Not In Voice Channel '''
             if not server.voiceConnection:
                 continue
-            if not server.voiceConnection.is_playing():
+            if not server.voiceConnection.is_playing() and type(server.modifiedQueueIndex) is int:
+                ''' Jump on the completion of queue. '''
+                if server.modifiedQueueIndex >= len(server.queue) or server.modifiedQueueIndex < 0:
+                    await Embed().exception(
+                        server.context,
+                        'Invalid Jump',
+                        f'No track is present at that index. 👀',
+                        '❌'
+                    )
+                    server.modifiedQueueIndex = None
+                    continue
+                else:
+                    server.queueIndex = server.modifiedQueueIndex
+                    server.modifiedQueueIndex = None
+            elif not server.voiceConnection.is_playing():
                 ''' Track Completed '''
                 if server.queueIndex >= len(server.queue):
                     continue
@@ -107,16 +121,16 @@ class Commands(commands.Cog):
 
 class Server:
 
-    def __init__(self, context, serverId, textChannel, voiceChannel):
+    def __init__(self, context, serverId, textChannel, voiceChannel, voiceChannelName):
         self.context = context
         self.serverId = serverId
         self.textChannel = textChannel
         self.voiceChannel = voiceChannel
+        self.voiceChannelName = voiceChannelName
         self.voiceConnection = None
         self.queueIndex = -1
         self.modifiedQueueIndex = None
         self.queue = []
-        self.configVoice = "Music"
 
     async def connect(self):
         if not self.voiceConnection:
@@ -137,6 +151,26 @@ class Server:
     def stop(self):
         self.voiceConnection.stop()
 
+    async def changeChannel(self, context, voiceChannelName):
+        voiceChannel = Commands.bot.get_channel(discord.utils.get(context.guild.channels, name = voiceChannelName).id)
+        if not voiceChannel:
+            await Embed().exception(
+                context,
+                'Information',
+                f'Please make a voice channel with name "{voiceChannelName}" first. 🔧',
+                '❌'
+            )
+            return None
+        if self.voiceChannelName != voiceChannelName and voiceChannel:
+            self.voiceChannel = voiceChannel
+            self.voiceChannelName = voiceChannelName
+            if self.voiceConnection:
+                await self.disconnect()
+                await self.connect()
+            else:
+                await self.connect()
+
+
     @staticmethod
     async def get(context):
         asyncio.ensure_future(context.message.add_reaction('👀'))
@@ -145,7 +179,7 @@ class Server:
                 ''' Update textChannel where the newest command is detected. '''
                 server.textChannel = Commands.bot.get_channel(context.message.channel.id)
                 return server
-        voiceChannelKey = discord.utils.get(context.guild.channels, name=Server.configVoice)
+        voiceChannelKey = discord.utils.get(context.guild.channels, name = 'Music')
         if voiceChannelKey:
             serverId = context.message.guild.id
             textChannel = Commands.bot.get_channel(context.message.channel.id)
@@ -156,6 +190,7 @@ class Server:
                     serverId,
                     textChannel,
                     voiceChannel,
+                    'Music',
                 )
             )
             return Commands.recognisedServers[-1]
@@ -163,7 +198,7 @@ class Server:
             await Embed().exception(
                 context,
                 'Information',
-                f'Please make a voice channel with name "{self.configVoice}" first. 🔧',
+                f'Please make a voice channel with name "Music" first or use -changeChannel command. 🔧',
                 '❌'
             )
             return None
