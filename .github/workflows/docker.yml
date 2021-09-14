@@ -21,11 +21,9 @@ jobs:
         uses: docker/metadata-action@v3
         with:
           images: ghcr.io/${{ github.repository }}
-          tags: type=ref,event=tag
       - name: Build Docker image
         uses: docker/build-push-action@v2
         with:
-          file: "./docker/Dockerfile.server"
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          file: "Dockerfile"
+          tags: latest
           push: true
