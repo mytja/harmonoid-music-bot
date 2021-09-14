@@ -16,14 +16,15 @@ jobs:
           username: ${{github.actor}}
           password: ${{secrets.GITHUB_TOKEN}}
           registry: "ghcr.io"
-      - name: Get Docker meta
-        id: meta
-        uses: docker/metadata-action@v3
-        with:
-          images: ghcr.io/mytja/${{ github.repository }}
+      #- name: Get Docker meta
+      #  id: meta
+      #  uses: docker/metadata-action@v3
+      #  with:
+      #    images: ghcr.io/${{ github.repository }}
       - name: Build Docker image
         uses: docker/build-push-action@v2
         with:
-          file: "Dockerfile"
+          repository: ${{ github.repository }}
+          file: "./Dockerfile"
           tags: latest
           push: true
