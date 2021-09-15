@@ -60,7 +60,29 @@ To use me in your server, use [this](https://discord.com/oauth2/authorize?client
 
 You can deploy this bot on Heroku or on a self hosted machine.
 
-#### Deploying to Heroku
+### Personal deployment
+Docker is recommended for personal deployment.
+
+#### Docker
+If you have Docker installed, you can enter following commands:
+```bash
+sudo docker pull ghcr.io/mytja/harmonoid-music-bot:latest
+sudo docker run -d -e DISCORD_TOKEN=<your discord bot token> ghcr.io/mytja/harmonoid-music-bot
+```
+You can view your running machines using `sudo docker ps`
+
+Afterwards, you can see logs using `sudo docker logs <your docker container id>`.
+Docker container ID can be obtained using `sudo docker ps`
+
+#### Self-deploy on Ubuntu/Debian based distros
+1. Get repository `git clone https://github.com/mytja/harmonoid-music-bot`
+2. Change directory `cd harmonoid-music-bot`
+3. Install Python dependencies `python3 -m pip install -r requirements.txt`
+4. Install ffmpeg `sudo apt install ffmpeg`
+5. Export environment variable `export DISCORD_TOKEN=<your discord bot token>`
+6. Run a program `python3 main.py`
+
+### Deploying to Heroku
 - Create an account on Heroku if you don't have it yet
 - Create an app
 - Create a fork of our repo on GitHub & Deploy it on Heroku
