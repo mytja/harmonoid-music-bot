@@ -1,6 +1,6 @@
 <h1 align='center'><a href='https://github.com/harmonoid/harmonoid-music-bot'>Harmonoid Music Bot</a></h1>
 <h4 align='center'>🎵 Music bot for Discord. Supports lyrics, queues & plays using both YT Music & YouTube.</h4>
-<p align='center'><a href='https://discord.com/oauth2/authorize?client_id=802600265005137980&scope=bot&permissions=36932608'>Invite</a> | <a href='https://discord.com/invite/ZG7Pj9SREG'>Discord</a> | <a href='https://harmonoid.github.io/harmonoid-music-bot'>Website</a></p>
+<p align='center'><a href='https://harmonoid.github.io/harmonoid-music-bot'>Website</a></p>
 
 <table>
   <tr>
@@ -12,11 +12,11 @@
 
 ## 💜 Support
 
-You may join our [Discord](https://discord.com/invite/ZG7Pj9SREG) server to provide feedback, report bugs in the bot or just chill.
+You may open a issue, and we will be happy to assist.
 
 ## 🎵 Invite
 
-To use me in your server, use [this](https://discord.com/oauth2/authorize?client_id=802600265005137980&scope=bot&permissions=36932608) link to invite me.
+You have to self-deploy it - instructions down bellow.
 
 ## 🎹 Commands
 
@@ -63,7 +63,7 @@ You can deploy this bot on Heroku or on a self hosted machine.
 ### Personal deployment
 Docker is recommended for personal deployment.
 
-#### Docker
+#### Docker (self-hosted machine)
 If you have Docker installed, you can enter following commands:
 ```bash
 sudo docker pull ghcr.io/mytja/harmonoid-music-bot:latest
