@@ -35,6 +35,7 @@ class Lifecycle:
             elif not server.voiceConnection.is_playing():
                 ''' Track Completed '''
                 if server.queueIndex >= len(server.queue):
+                    server.modifiedQueueIndex = 1
                     continue
                 else:
                     server.queueIndex += 1

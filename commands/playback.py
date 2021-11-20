@@ -165,7 +165,7 @@ class Playback(Commands):
                 else:
                     ''' Run mainloop if something is not playing. '''
                     server.queueIndex -= 1
-                    await Commands.listenUpdates()    
+                    await Commands.listenUpdates()
         except:
             await self.embed.exception(
                 ctx,
