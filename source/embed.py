@@ -81,7 +81,7 @@ class Embed:
                 video['thumbnails'][-1]['url'],
                 [
                     EmbedField('Channel', video['channel']['name'], False),
-                    EmbedField('Duration', Method.formatDuration(int(video['streamingData']['formats'][0]['approxDurationMs']) // 1000), True),
+                    EmbedField('Duration', Method.formatDuration(video["duration"]["secondsText"]), True),
                     EmbedField('Year', video['publishDate'].split('-')[0], True),
                 ],
                 '🎶',
@@ -113,7 +113,7 @@ class Embed:
                 None,
                 [
                     EmbedField('Channel', video['channel']['name'], False),
-                    EmbedField('Duration', Method.formatDuration(int(video['streamingData']['formats'][0]['approxDurationMs']) // 1000), True),
+                    EmbedField('Duration', Method.formatDuration(video["duration"]["secondsText"]), True),
                     EmbedField('Year', video['publishDate'].split('-')[0], True),
                 ],
                 '🎶',
@@ -140,7 +140,7 @@ class Embed:
             if 'trackName' in query.keys():
                 queueString += f'  {index + 1}. {query["trackName"]} - _{", ".join(query["trackArtistNames"])}_\n    {Method.formatDuration(query["trackDuration"])}\n'
             else:
-                queueString += f'  {index + 1}. {query["title"]} - _{query["channel"]["name"]}_\n    {Method.formatDuration(int(query["streamingData"]["formats"][0]["approxDurationMs"]) // 1000)}\n'
+                queueString += f'  {index + 1}. {query["title"]} - _{query["channel"]["name"]}_\n    {Method.formatDuration(query["duration"]["secondsText"])}\n'
         await self.__createEmbed(
             context,
             'Queue',
