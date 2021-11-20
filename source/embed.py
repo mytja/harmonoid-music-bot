@@ -31,8 +31,7 @@ class Embed:
                 video['thumbnails'][-1]['url'],
                 [
                     EmbedField('Channel', video['channel']['name'], False),
-                    EmbedField('Duration', Method.formatDuration(int(video['streamingData']['formats'][0]['approxDurationMs']) // 1000), True),
-                    EmbedField('Year', video['publishDate'].split('-')[0], True),
+                    EmbedField('Duration', Method.formatDuration(video["duration"]["secondsText"]), True),
                 ],
                 '🎶',
                 True,
