@@ -82,7 +82,6 @@ class Embed:
                 [
                     EmbedField('Channel', video['channel']['name'], False),
                     EmbedField('Duration', Method.formatDuration(video["duration"]["secondsText"]), True),
-                    EmbedField('Year', video['publishDate'].split('-')[0], True),
                 ],
                 '🎶',
                 True,
@@ -114,7 +113,6 @@ class Embed:
                 [
                     EmbedField('Channel', video['channel']['name'], False),
                     EmbedField('Duration', Method.formatDuration(video["duration"]["secondsText"]), True),
-                    EmbedField('Year', video['publishDate'].split('-')[0], True),
                 ],
                 '🎶',
                 True,
