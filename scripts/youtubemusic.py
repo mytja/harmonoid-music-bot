@@ -73,7 +73,7 @@ class YouTubeMusic:
                 'albumArtMedium': albumArtMedium,
                 'albumArtLow': albumArtLow,
                 'albumName': album['title'],
-                'year': album['releaseDate']['year'],
+                'year': album['year'],
                 'url': track['url'],
             }
         else:

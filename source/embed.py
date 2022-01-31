@@ -265,7 +265,6 @@ class Embed:
         import ytmusicapi
         import youtubesearchpython
         import httpx
-        import pytube
         import aiofiles
         import nacl
         try:
@@ -289,7 +288,7 @@ class Embed:
                 EmbedField('Recognized Servers', f'{len(commands.recognisedServers)} servers', inline = False),
                 EmbedField('Playing Music On', f'{playingMusicOnServers} servers', inline = False),
                 EmbedField('This Server', f'{context.message.guild.name} in {context.message.channel.mention} channel.', inline = False),
-                EmbedField('Dependencies', f'\ndiscord.py {discord.__version__}\nytmusicapi {ytmusicapi.__version__}\nyoutube-search-python {youtubesearchpython.__version__}\npytube {pytube.__version__}\nhttpx {httpx.__version__}\naiofiles {aiofiles.__version__}\npynacl {nacl.__version__}''', inline = False),
+                EmbedField('Dependencies', f'\ndiscord.py {discord.__version__}\nytmusicapi {ytmusicapi.__version__}\nyoutube-search-python {youtubesearchpython.__version__}\nhttpx {httpx.__version__}\npynacl {nacl.__version__}''', inline = False),
                 EmbedField('Runtime', f'{runtime}', inline = False),
             ],
             'ℹ',

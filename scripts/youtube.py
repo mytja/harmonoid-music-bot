@@ -1,9 +1,10 @@
+from youtubesearchpython.__future__ import VideosSearch
+
 from typing import List, Union
 
 import httpx
 import os
 import aiofiles
-from youtubesearchpython.__future__ import VideosSearch
 
 
 def getValue(source: dict, path: List[str]) -> Union[str, int, dict, None]:
@@ -25,59 +26,62 @@ def getValue(source: dict, path: List[str]) -> Union[str, int, dict, None]:
 
 class Video:
     @staticmethod
-    def getFormat(videoId: str) -> dict:
-        player = httpx.post(
-            "https://www.youtube.com/youtubei/v1/player",
-            json={
-                "context": {
-                    "client": {
-                        "clientName": "ANDROID",
-                        "clientScreen": "EMBED",
-                        "clientVersion": "16.43.34",
+    async def getFormat(videoId: str) -> dict:
+        async with httpx.AsyncClient() as client:
+            player = await client.post(
+                "https://www.youtube.com/youtubei/v1/player",
+                json={
+                    "context": {
+                        "client": {
+                            "clientName": "ANDROID",
+                            "clientScreen": "EMBED",
+                            "clientVersion": "16.43.34",
+                        },
+                        "thirdParty": {
+                            "embedUrl": "https://www.youtube.com",
+                        },
                     },
-                    "thirdParty": {
-                        "embedUrl": "https://www.youtube.com",
-                    },
+                    "videoId": videoId,
                 },
-                "videoId": videoId,
-            },
-            headers={"X-Goog-Api-Key": "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8"}
-        ).json()
+                headers={"X-Goog-Api-Key": "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8"}
+            )
+            player = player.json()
 
-        component = {
-            'id': getValue(player, ['videoDetails', 'videoId']),
-            'title': getValue(player, ['videoDetails', 'title']),
-            'duration': {
-                'secondsText': getValue(player, ['videoDetails', 'lengthSeconds']),
-            },
-            'viewCount': {
-                'text': getValue(player, ['videoDetails', 'viewCount'])
-            },
-            'thumbnails': getValue(player, ['videoDetails', 'thumbnail', 'thumbnails']),
-            'description': getValue(player, ['videoDetails', 'shortDescription']),
-            'channel': {
-                'name': getValue(player, ['videoDetails', 'author']),
-                'id': getValue(player, ['videoDetails', 'channelId']),
-            },
-            'allowRatings': getValue(player, ['videoDetails', 'allowRatings']),
-            'averageRating': getValue(player, ['videoDetails', 'averageRating']),
-            'keywords': getValue(player, ['videoDetails', 'keywords']),
-            'isLiveContent': getValue(player, ['videoDetails', 'isLiveContent']),
-            'publishDate': getValue(player, ['microformat', 'playerMicroformatRenderer', 'publishDate']),
-            'uploadDate': getValue(player, ['microformat', 'playerMicroformatRenderer', 'uploadDate']),
-        }
-        component['isLiveNow'] = component['isLiveContent'] and component['duration']['secondsText'] == "0"
-        component['link'] = 'https://www.youtube.com/watch?v=' + component['id']
-        component['channel']['link'] = 'https://www.youtube.com/channel/' + component['channel']['id']
+            component: dict = {
+                'id': getValue(player, ['videoDetails', 'videoId']),
+                'title': getValue(player, ['videoDetails', 'title']),
+                'duration': {
+                    'secondsText': getValue(player, ['videoDetails', 'lengthSeconds']),
+                    "approxDuration": getValue(player, ["streamingData", "adaptiveFormats", 0, "approxDurationMs"])
+                },
+                'viewCount': {
+                    'text': getValue(player, ['videoDetails', 'viewCount'])
+                },
+                'thumbnails': getValue(player, ['videoDetails', 'thumbnail', 'thumbnails']),
+                'description': getValue(player, ['videoDetails', 'shortDescription']),
+                'channel': {
+                    'name': getValue(player, ['videoDetails', 'author']),
+                    'id': getValue(player, ['videoDetails', 'channelId']),
+                },
+                'allowRatings': getValue(player, ['videoDetails', 'allowRatings']),
+                'averageRating': getValue(player, ['videoDetails', 'averageRating']),
+                'keywords': getValue(player, ['videoDetails', 'keywords']),
+                'isLiveContent': getValue(player, ['videoDetails', 'isLiveContent']),
+                'publishDate': getValue(player, ['microformat', 'playerMicroformatRenderer', 'publishDate']),
+                'uploadDate': getValue(player, ['microformat', 'playerMicroformatRenderer', 'uploadDate']),
+            }
+            component['isLiveNow'] = component['isLiveContent'] and component['duration']['secondsText'] == "0"
+            component['link'] = 'https://www.youtube.com/watch?v=' + component['id']
+            component['channel']['link'] = 'https://www.youtube.com/channel/' + component['channel']['id']
 
-        formats = player["streamingData"]["adaptiveFormats"]
-        for f in formats:
-            if f["itag"] == 251:
-                component["url"] = f["url"]
-            elif f["itag"] == 140:
-                # Fallback aac
-                component["fallbackURL"] = f["url"]
-        return component
+            formats = player["streamingData"]["adaptiveFormats"]
+            for f in formats:
+                if f["itag"] == 251:
+                    component["url"] = f["url"]
+                elif f["itag"] == 140:
+                    # Fallback AAC
+                    component["fallbackURL"] = f["url"]
+            return component
 
 class YouTube:
     def __init__(self):
@@ -93,7 +97,7 @@ class YouTube:
         else:
             videoId = self.__getVideoId(videoName)
         ''' Getting Stream URL '''
-        video = Video.getFormat(videoId)
+        video = await Video.getFormat(videoId)
         videoUrl = video["url"]
         if not videoUrl:
             ''' Fallback AAC '''
