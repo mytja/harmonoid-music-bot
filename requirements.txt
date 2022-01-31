@@ -2,5 +2,5 @@ git+https://github.com/sigma67/ytmusicapi@master
 git+https://github.com/alexmercerind/youtube-search-python
 aiofiles
 httpx
-discord
+pycord
 pynacl

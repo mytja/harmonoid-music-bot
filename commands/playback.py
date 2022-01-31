@@ -15,6 +15,11 @@ class Playback(Commands):
             server.queueIndex,
         )
 
+    @commands.command()
+    async def latency(self, ctx):
+        server: Server = await Server.get(ctx)
+        await self.embed.latency(ctx, server.get_latency())
+
     @commands.command(aliases=['n', 's'])
     async def next(self, ctx):
         if not (server := await Server.get(ctx)):

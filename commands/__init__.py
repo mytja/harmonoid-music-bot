@@ -67,7 +67,7 @@ class Lifecycle:
             try:
                 server.voiceConnection.play(
                     discord.FFmpegOpusAudio(trackFile),
-                    after = lambda exception: asyncio.run_coroutine_threadsafe(
+                    after=lambda exception: asyncio.run_coroutine_threadsafe(
                         Commands.listenUpdates(), Commands.bot.loop
                     ),
                 )
@@ -77,7 +77,7 @@ class Lifecycle:
                     server.stop()
                     server.voiceConnection.play(
                         discord.FFmpegOpusAudio(trackFile),
-                        after = lambda exception: asyncio.run_coroutine_threadsafe(
+                        after=lambda exception: asyncio.run_coroutine_threadsafe(
                             Commands.listenUpdates(), Commands.bot.loop
                         ),
                     )
@@ -101,11 +101,10 @@ class Lifecycle:
                 )
 
 
-
 class Commands(commands.Cog):
-    ''' Static Members '''
+    """ Static Members """
     bot = None
-    recognisedServers = []
+    recognisedServers: list = []
 
     @staticmethod
     async def listenUpdates():
@@ -119,7 +118,6 @@ class Commands(commands.Cog):
 
 
 class Server:
-
     def __init__(self, context, serverId, textChannel, voiceChannel, voiceChannelName):
         self.context = context
         self.serverId = serverId
@@ -140,7 +138,10 @@ class Server:
         self.voiceConnection = None
         self.queueIndex = -1
         self.modifiedQueueIndex = None
-    
+
+    def get_latency(self) -> float:
+        return self.voiceConnection.average_latency
+
     def resume(self):
         self.voiceConnection.resume()
 
@@ -151,7 +152,7 @@ class Server:
         self.voiceConnection.stop()
 
     async def changeChannel(self, context, voiceChannelName):
-        voiceChannel = Commands.bot.get_channel(discord.utils.get(context.guild.channels, name = voiceChannelName).id)
+        voiceChannel = Commands.bot.get_channel(discord.utils.get(context.guild.channels, name=voiceChannelName).id)
         if not voiceChannel:
             await Embed().exception(
                 context,
@@ -169,7 +170,6 @@ class Server:
             else:
                 await self.connect()
 
-
     @staticmethod
     async def get(context):
         asyncio.ensure_future(context.message.add_reaction('👀'))
@@ -178,7 +178,7 @@ class Server:
                 ''' Update textChannel where the newest command is detected. '''
                 server.textChannel = Commands.bot.get_channel(context.message.channel.id)
                 return server
-        voiceChannelKey = discord.utils.get(context.guild.channels, name = 'Music')
+        voiceChannelKey = discord.utils.get(context.guild.channels, name='Music')
         if voiceChannelKey:
             serverId = context.message.guild.id
             textChannel = Commands.bot.get_channel(context.message.channel.id)

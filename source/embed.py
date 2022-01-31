@@ -1,3 +1,5 @@
+from typing import Optional
+
 import discord
 import asyncio
 from source.method import Method
@@ -87,6 +89,17 @@ class Embed:
                 True,
             )
 
+    async def latency(self, ctx, latency):
+        await self.__createEmbed(
+            ctx,
+            'Latency',
+            f'**Average latency is {latency}**',
+            None,
+            [],
+            'ℹ',
+            True,
+        )
+
     async def removedFromQueue(self, context, track):
         if 'trackName' in track.keys():
             await self.__createEmbed(
@@ -161,7 +174,7 @@ class Embed:
             Constants.description,
             'https://avatars.githubusercontent.com/u/75374037?s=200&v=4',
             [
-                EmbedField('Support', 'Discord Server: [Join](https://discord.gg/ZG7Pj9SREG)\nSource Code: [Contribute](https://github.com/harmonoid/harmonoid-music-bot)', False),
+                EmbedField('Support', 'Discord Server: [Join](https://discord.gg/ZG7Pj9SREG)\nSource Code: [Contribute](https://github.com/mytja/harmonoid-music-bot)', False),
                 EmbedField('Version', Constants.version, False),
                 EmbedField('Developers', developers, False),
             ],
@@ -309,11 +322,11 @@ class Embed:
 
     async def file(self, context, fileName, reaction):
         message = await context.send(
-            file = discord.File(fileName),
+            file=discord.File(fileName),
         )
         asyncio.ensure_future(message.add_reaction(reaction))
 
-    async def __createEmbed(self, context, title: str, description: str, thumbnail:str, fields: list, reaction: str, isMonospaced: bool, color = discord.Color.from_rgb(179, 136, 255)):
+    async def __createEmbed(self, context, title: str, description: str, thumbnail: Optional[str], fields: list, reaction: str, isMonospaced: bool, color = discord.Color.from_rgb(179, 136, 255)):
         embed = discord.Embed(
             title=title,
             description=description,
