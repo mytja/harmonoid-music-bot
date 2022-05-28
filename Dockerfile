@@ -1,12 +1,9 @@
-FROM python:3
+FROM python:3-alpine
 
 COPY . /app
 
 WORKDIR /app
 
-RUN pip install --upgrade -r requirements.txt
-RUN apt -y update && \
-    apt -y upgrade && \
-    apt install -y ffmpeg
+RUN apk add ffmpeg && pip install --upgrade -r requirements.txt
 
 CMD python main.py
