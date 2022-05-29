@@ -109,23 +109,21 @@ class Playback(Commands):
             return None
         try:
             ''' Add To Queue '''
-            try:
-                server.queue.append(track)
-                if not server.voiceConnection:
-                    await server.connect()
-                    ''' Run mainloop to notice server.voiceConnection. '''
-                    await Commands.listenUpdates()
+            server.queue.append(track)
+            if not server.voiceConnection:
+                await server.connect()
+                ''' Run mainloop to notice server.voiceConnection. '''
+                await Commands.listenUpdates()
+            else:
+                if server.voiceConnection.is_playing():
+                    ''' Only add to queue if something is playing. '''
+                    await self.embed.addedToQueue(ctx, track)
                 else:
-                    if server.voiceConnection.is_playing():
-                        ''' Only add to queue if something is playing. '''
-                        await self.embed.addedToQueue(ctx, track)
-                    else:
-                        ''' Run mainloop if something is not playing. '''
-                        server.queueIndex -= 1
-                        await Commands.listenUpdates()
-            except Exception as exception:
-                print(exception)
-        except:
+                    ''' Run mainloop if something is not playing. '''
+                    server.queueIndex -= 1
+                    await Commands.listenUpdates()
+        except Exception as e:
+            print(e)
             await self.embed.exception(
                 ctx,
                 'Internal Error',
@@ -171,7 +169,8 @@ class Playback(Commands):
                     ''' Run mainloop if something is not playing. '''
                     server.queueIndex -= 1
                     await Commands.listenUpdates()
-        except:
+        except Exception as e:
+            print(e)
             await self.embed.exception(
                 ctx,
                 'Internal Error',
