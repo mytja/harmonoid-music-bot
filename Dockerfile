@@ -1,9 +1,9 @@
-FROM python:3-alpine
+FROM python:3
 
 COPY . /app
 
 WORKDIR /app
 
-RUN apk add ffmpeg git build-base libffi-dev openssl-dev && pip install --upgrade -r requirements.txt
+RUN apt update && apt install ffmpeg git build-essential libffi-dev openssl libssl-dev && pip install --upgrade -r requirements.txt
 
 CMD python -u main.py
