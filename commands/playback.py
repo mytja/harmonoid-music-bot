@@ -137,7 +137,7 @@ class Playback(Commands):
             return None
         ''' Downloading Track '''
         try:
-            video = await self.youtube.download(arg)
+            video = await youtube.download(arg)
             if not video:
                 await self.embed.exception(
                     ctx,

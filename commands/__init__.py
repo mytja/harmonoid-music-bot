@@ -3,12 +3,14 @@ from discord.ext import commands
 import asyncio
 
 from source.embed import Embed
-from scripts.youtube import YouTube
+from scripts.youtube import youtube
 from scripts.youtubemusic import YouTubeMusic
 
 
-class Lifecycle:
+FFMPEG_OPTS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
 
+
+class Lifecycle:
     @staticmethod
     async def update():
         for server in Commands.recognisedServers:
@@ -58,15 +60,10 @@ class Lifecycle:
                 continue
             ''' Track Playback '''
             track = server.queue[server.queueIndex]
-            if 'trackId' in server.queue[server.queueIndex].keys():
-                ''' Queue item is track. '''
-                trackFile = f'{server.queue[server.queueIndex]["trackId"]}.webm'
-            else:
-                ''' Queue item is video. '''
-                trackFile = f'{server.queue[server.queueIndex]["id"]}.webm'
+            url = await youtube.fetch_url(track, 251)
             try:
                 server.voiceConnection.play(
-                    discord.FFmpegOpusAudio(trackFile),
+                    discord.FFmpegOpusAudio(url, **FFMPEG_OPTS),
                     after=lambda exception: asyncio.run_coroutine_threadsafe(
                         Commands.listenUpdates(), Commands.bot.loop
                     ),
@@ -76,7 +73,7 @@ class Lifecycle:
                 try:
                     server.stop()
                     server.voiceConnection.play(
-                        discord.FFmpegOpusAudio(trackFile),
+                        discord.FFmpegOpusAudio(url, **FFMPEG_OPTS),
                         after=lambda exception: asyncio.run_coroutine_threadsafe(
                             Commands.listenUpdates(), Commands.bot.loop
                         ),
@@ -114,7 +111,6 @@ class Commands(commands.Cog):
         self.bot = bot
         self.embed = Embed()
         self.youtubeMusic = YouTubeMusic()
-        self.youtube = YouTube()
 
 
 class Server:

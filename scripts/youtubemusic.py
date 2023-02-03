@@ -1,5 +1,3 @@
-import httpx
-import os
 import aiofiles
 import asyncio
 from scripts.internal import YTM
@@ -10,29 +8,7 @@ class YouTubeMusic:
         self.__youtube = YTM()
 
     async def download(self, trackName: str) -> dict:
-        ''' Searching Track '''
-        track = await self.__getTrack(trackName)
-        if not track:
-            return None
-        trackId = track['trackId']
-        ''' Getting Stream URL '''
-        trackUrl = track['url']
-        if os.path.isfile(f'{trackId}.webm'):
-            return track
-        elif type(track) is dict:
-            ''' Saving Track File '''
-            async with httpx.AsyncClient() as client:
-                response = await client.get(
-                    trackUrl,
-                    timeout=None,
-                    headers={'Range': 'bytes=0-'}
-                )
-            if response.status_code in [200, 206]:
-                async with aiofiles.open(f'{trackId}.webm', 'wb') as file:
-                    await file.write(response.content)
-            return track
-        else:
-            return None
+        return await self.__getTrack(trackName)
 
     async def getLyrics(self, trackName, save = False):
         result = await self.__youtube.searchYouTube(trackName, 'songs')

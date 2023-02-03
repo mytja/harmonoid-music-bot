@@ -95,7 +95,6 @@ Docker container ID can be obtained using `sudo docker ps`
 ## ⭐ Acknowledgements
 - [sigmatics](https://github.com/sigma67) for [ytmusicapi](https://github.com/sigma67/ytmusicapi)
 - [PyTube](https://github.com/pytube) for [PyTube](https://github.com/pytube/pytube)
-- [Encode](https://github.com/encode) for [httpx](https://github.com/encode/httpx)
 - [Tin Tvrtković](https://github.com/Tinche) for [aiofiles](https://github.com/Tinche/aiofiles)
 - [alexmercerind](https://github.com/alexmercerind) for [youtube-search-python](https://github.com/alexmercerind/youtube-search-python)
 - [Danny](https://github.com/Rapptz) for [discord.py](https://github.com/Rapptz/discord.py)

@@ -277,7 +277,6 @@ class Embed:
     async def status(self, context, commands):
         import ytmusicapi
         import youtubesearchpython
-        import httpx
         import aiofiles
         import nacl
         try:
@@ -301,7 +300,7 @@ class Embed:
                 EmbedField('Recognized Servers', f'{len(commands.recognisedServers)} servers', inline = False),
                 EmbedField('Playing Music On', f'{playingMusicOnServers} servers', inline = False),
                 EmbedField('This Server', f'{context.message.guild.name} in {context.message.channel.mention} channel.', inline = False),
-                EmbedField('Dependencies', f'\ndiscord.py {discord.__version__}\nytmusicapi {ytmusicapi.__version__}\nyoutube-search-python {youtubesearchpython.__version__}\nhttpx {httpx.__version__}\npynacl {nacl.__version__}''', inline = False),
+                EmbedField('Dependencies', f'\ndiscord.py {discord.__version__}\nytmusicapi {ytmusicapi.__version__}\nyoutube-search-python {youtubesearchpython.__version__}\npynacl {nacl.__version__}''', inline = False),
                 EmbedField('Runtime', f'{runtime}', inline = False),
             ],
             'ℹ',
@@ -342,7 +341,7 @@ class Embed:
             )
         embed.set_footer(
             text=f'Requested by {context.author.name}',
-            icon_url=context.author.avatar_url
+            icon_url=context.author.avatar.url
         )
         message = await context.send(embed=embed)
         asyncio.ensure_future(message.add_reaction(reaction))
