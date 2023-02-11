@@ -9,6 +9,12 @@ class Controls(Commands):
     @commands.command(aliases=['pp'])
     async def togglePlayback(self, ctx):
         if not (server := await Server.get(ctx)):
+            await self.embed.exception(
+                ctx,
+                'Internal Error',
+                'Please join a voice channel before requesting any music. ℹ',
+                '❌'
+            )
             return None
         if server.voiceConnection:
             if server.voiceConnection.is_playing():
@@ -28,6 +34,12 @@ class Controls(Commands):
     @commands.command()
     async def resume(self, ctx):
         if not (server := await Server.get(ctx)):
+            await self.embed.exception(
+                ctx,
+                'Internal Error',
+                'Please join a voice channel before requesting any music. ℹ',
+                '❌'
+            )
             return None
         if server.voiceConnection:
             if server.voiceConnection.is_paused():
@@ -44,6 +56,12 @@ class Controls(Commands):
     @commands.command()
     async def pause(self, ctx):
         if not (server := await Server.get(ctx)):
+            await self.embed.exception(
+                ctx,
+                'Internal Error',
+                'Please join a voice channel before requesting any music. ℹ',
+                '❌'
+            )
             return None
         if server.voiceConnection:
             if server.voiceConnection.is_playing():
@@ -56,19 +74,4 @@ class Controls(Commands):
                     'Already paused. 🎶',
                     '❌',
                 )
-    
-    @commands.command(aliases=['cc'])
-    async def changeChannel(self, ctx, *, arg):
-        if not (server := await Server.get(ctx)):
-            return None
-        await server.changeChannel(
-            ctx,
-            arg,
-        )
-        await self.embed.exception(
-            ctx,
-            'Voice Channel Change',
-            f'Voice channel successfully changed to "{arg}".',
-            '✅',
-        )
     

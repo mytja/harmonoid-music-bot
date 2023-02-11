@@ -36,8 +36,13 @@ class Lifecycle:
                     server.modifiedQueueIndex = None
             elif not server.voiceConnection.is_playing():
                 ''' Track Completed '''
+                print(server.queueIndex, len(server.queue))
                 if server.queueIndex >= len(server.queue):
                     server.modifiedQueueIndex = 1
+                    if server.voiceConnection:
+                        await server.voiceConnection.disconnect()
+                        server.voiceConnection = None
+                        await Embed().channel_leave(server.context)
                     continue
                 else:
                     server.queueIndex += 1
@@ -114,12 +119,11 @@ class Commands(commands.Cog):
 
 
 class Server:
-    def __init__(self, context, serverId, textChannel, voiceChannel, voiceChannelName):
+    def __init__(self, context, serverId, textChannel, voiceChannel):
         self.context = context
         self.serverId = serverId
         self.textChannel = textChannel
         self.voiceChannel = voiceChannel
-        self.voiceChannelName = voiceChannelName
         self.voiceConnection = None
         self.queueIndex = -1
         self.modifiedQueueIndex = None
@@ -130,7 +134,8 @@ class Server:
             self.voiceConnection = await self.voiceChannel.connect()
 
     async def disconnect(self):
-        await self.voiceConnection.disconnect()
+        if self.voiceConnection:
+            await self.voiceConnection.disconnect()
         self.voiceConnection = None
         self.queueIndex = -1
         self.modifiedQueueIndex = None
@@ -147,53 +152,32 @@ class Server:
     def stop(self):
         self.voiceConnection.stop()
 
-    async def changeChannel(self, context, voiceChannelName):
-        voiceChannel = Commands.bot.get_channel(discord.utils.get(context.guild.channels, name=voiceChannelName).id)
-        if not voiceChannel:
-            await Embed().exception(
-                context,
-                'Information',
-                f'Please make a voice channel with name "{voiceChannelName}" first. 🔧',
-                '❌'
-            )
-            return None
-        if self.voiceChannelName != voiceChannelName and voiceChannel:
-            self.voiceChannel = voiceChannel
-            self.voiceChannelName = voiceChannelName
-            if self.voiceConnection:
-                await self.disconnect()
-                await self.connect()
-            else:
-                await self.connect()
-
     @staticmethod
-    async def get(context):
+    async def get(context, connect: bool = False):
         asyncio.ensure_future(context.message.add_reaction('👀'))
         for server in Commands.recognisedServers:
             if server.serverId == context.message.guild.id:
-                ''' Update textChannel where the newest command is detected. '''
+                if context.author.voice:
+                    server.voiceChannel = context.author.voice.channel
+                    if server.voiceConnection:
+                        await server.voiceConnection.move_to(server.voiceChannel)
+                    elif connect:
+                        await server.connect()
+                if connect and not server.voiceConnection:
+                    return None
                 server.textChannel = Commands.bot.get_channel(context.message.channel.id)
                 return server
-        voiceChannelKey = discord.utils.get(context.guild.channels, name='Music')
-        if voiceChannelKey:
-            serverId = context.message.guild.id
-            textChannel = Commands.bot.get_channel(context.message.channel.id)
-            voiceChannel = Commands.bot.get_channel(voiceChannelKey.id)
-            Commands.recognisedServers.append(
-                Server(
-                    context,
-                    serverId,
-                    textChannel,
-                    voiceChannel,
-                    'Music',
-                )
-            )
-            return Commands.recognisedServers[-1]
-        else:
-            await Embed().exception(
-                context,
-                'Information',
-                f'Please make a voice channel with name "Music" first or use -changeChannel command. 🔧',
-                '❌'
-            )
+        serverId = context.message.guild.id
+        textChannel = Commands.bot.get_channel(context.message.channel.id)
+        if context.author.voice is None:
             return None
+        voiceChannel = context.author.voice.channel
+        Commands.recognisedServers.append(
+            Server(
+                context,
+                serverId,
+                textChannel,
+                voiceChannel,
+            )
+        )
+        return Commands.recognisedServers[-1]

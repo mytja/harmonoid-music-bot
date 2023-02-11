@@ -89,6 +89,17 @@ class Embed:
                 True,
             )
 
+    async def channel_leave(self, ctx):
+        await self.__createEmbed(
+            ctx,
+            'Left the voice channel',
+            f'The bot has left the voice channel in order to save some bandwidth. To make the bot rejoin, run any playback (-py, -p) command while in voice channel.',
+            None,
+            [],
+            'ℹ',
+            True,
+        )
+
     async def latency(self, ctx, latency):
         await self.__createEmbed(
             ctx,
@@ -174,7 +185,7 @@ class Embed:
             Constants.description,
             'https://avatars.githubusercontent.com/u/75374037?s=200&v=4',
             [
-                EmbedField('Support', 'Discord Server: [Join](https://discord.gg/ZG7Pj9SREG)\nSource Code: [Contribute](https://github.com/mytja/harmonoid-music-bot)', False),
+                EmbedField('Support', 'Discord Server: [Join](https://discord.gg/2Rc3edFWd8)\nSource Code: [Contribute](https://github.com/mytja/harmonoid-music-bot)', False),
                 EmbedField('Version', Constants.version, False),
                 EmbedField('Developers', developers, False),
             ],
@@ -245,6 +256,11 @@ class Embed:
                     False,
                 ),
                 EmbedField(
+                    '-latency',
+                    'Shows the latency of music playback.',
+                    False,
+                ),
+                EmbedField(
                     '-lyrics <song name or link>',
                     '-l\nShows lyrics of a track.',
                     False,
@@ -252,11 +268,6 @@ class Embed:
                 EmbedField(
                     '-lyricsSend <song name or link>',
                     '-ls\nSends lyrics of a track in a TXT file.',
-                    False,
-                ),
-                EmbedField(
-                    '-changeChannel <voice channel name>',
-                    '-cc <voice channel name>\nChanges voice channel where music should be played.',
                     False,
                 ),
                 EmbedField(
@@ -300,7 +311,7 @@ class Embed:
                 EmbedField('Recognized Servers', f'{len(commands.recognisedServers)} servers', inline = False),
                 EmbedField('Playing Music On', f'{playingMusicOnServers} servers', inline = False),
                 EmbedField('This Server', f'{context.message.guild.name} in {context.message.channel.mention} channel.', inline = False),
-                EmbedField('Dependencies', f'\ndiscord.py {discord.__version__}\nytmusicapi {ytmusicapi.__version__}\nyoutube-search-python {youtubesearchpython.__version__}\npynacl {nacl.__version__}''', inline = False),
+                EmbedField('Dependencies', f'\npycord {discord.__version__}\nytmusicapi {ytmusicapi.__version__}\nyoutube-search-python {youtubesearchpython.__version__}\npynacl {nacl.__version__}''', inline = False),
                 EmbedField('Runtime', f'{runtime}', inline = False),
             ],
             'ℹ',

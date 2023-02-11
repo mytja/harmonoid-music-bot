@@ -8,6 +8,12 @@ class Playback(Commands):
     @commands.command(aliases=['q'])
     async def queue(self, ctx):
         if not (server := await Server.get(ctx)):
+            await self.embed.exception(
+                ctx,
+                'Internal Error',
+                'Please join a voice channel before requesting any music. ℹ',
+                '❌'
+            )
             return None
         await self.embed.queue(
             ctx,
@@ -18,11 +24,35 @@ class Playback(Commands):
     @commands.command()
     async def latency(self, ctx):
         server: Server = await Server.get(ctx)
+        if not server:
+            await self.embed.exception(
+                ctx,
+                'Internal Error',
+                'Please join a voice channel before requesting any music. ℹ',
+                '❌'
+            )
+            return None
         await self.embed.latency(ctx, server.get_latency())
+
+    @commands.command()
+    async def changeChannel(self, ctx):
+        await self.embed.exception(
+            ctx,
+            'Internal Error',
+            'Oops, this command was recently removed. You don\'t to setup a channel before playback, just hop into a voice channel & get started with music playback. ℹ',
+            '❌'
+        )
+        return None
 
     @commands.command(aliases=['n', 's'])
     async def next(self, ctx):
-        if not (server := await Server.get(ctx)):
+        if not (server := await Server.get(ctx, connect=True)):
+            await self.embed.exception(
+                ctx,
+                'Internal Error',
+                'Please join a voice channel before requesting any music. ℹ',
+                '❌'
+            )
             return None
         ''' Next Track '''
         server.modifiedQueueIndex = server.queueIndex + 1
@@ -31,7 +61,13 @@ class Playback(Commands):
 
     @commands.command(aliases=['b'])
     async def back(self, ctx):
-        if not (server := await Server.get(ctx)):
+        if not (server := await Server.get(ctx, connect=True)):
+            await self.embed.exception(
+                ctx,
+                'Internal Error',
+                'Please join a voice channel before requesting any music. ℹ',
+                '❌'
+            )
             return None
         ''' Previous Track '''
         server.modifiedQueueIndex = server.queueIndex - 1
@@ -40,7 +76,13 @@ class Playback(Commands):
 
     @commands.command(aliases=['j'])
     async def jump(self, ctx, *, arg):
-        if not (server := await Server.get(ctx)):
+        if not (server := await Server.get(ctx, connect=True)):
+            await self.embed.exception(
+                ctx,
+                'Internal Error',
+                'Please join a voice channel before requesting any music. ℹ',
+                '❌'
+            )
             return None
         server.modifiedQueueIndex = int(arg) - 1
         ''' Run mainloop to notice modifiedQueueIndex. '''
@@ -49,6 +91,12 @@ class Playback(Commands):
     @commands.command(aliases=['d'])
     async def delete(self, ctx, *, arg):
         if not (server := await Server.get(ctx)):
+            await self.embed.exception(
+                ctx,
+                'Internal Error',
+                'Please join a voice channel before requesting any music. ℹ',
+                '❌'
+            )
             return None
         removeIndex = int(arg) - 1
         for index, track in enumerate(server.queue):
@@ -73,6 +121,12 @@ class Playback(Commands):
     @commands.command(aliases=['c'])
     async def clear(self, ctx):
         if not (server := await Server.get(ctx)):
+            await self.embed.exception(
+                ctx,
+                'Internal Error',
+                'Please join a voice channel before requesting any music. ℹ',
+                '❌'
+            )
             return None
         server.queue.clear()
         await server.disconnect()
@@ -85,7 +139,13 @@ class Playback(Commands):
     
     @commands.command(aliases=['p'])
     async def play(self, ctx, *, arg):
-        if not (server := await Server.get(ctx)):
+        if not (server := await Server.get(ctx, connect=True)):
+            await self.embed.exception(
+                ctx,
+                'Internal Error',
+                'Please join a voice channel before requesting any music. ℹ',
+                '❌'
+            )
             return None
         ''' Downloading Track '''
         try:
@@ -133,7 +193,13 @@ class Playback(Commands):
 
     @commands.command(aliases=['py'])
     async def playYT(self, ctx, *, arg):
-        if not (server := await Server.get(ctx)):
+        if not (server := await Server.get(ctx, connect=True)):
+            await self.embed.exception(
+                ctx,
+                'Internal Error',
+                'Please join a voice channel before requesting any music. ℹ',
+                '❌'
+            )
             return None
         ''' Downloading Track '''
         try:
