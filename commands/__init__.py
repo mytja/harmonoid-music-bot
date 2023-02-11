@@ -37,12 +37,9 @@ class Lifecycle:
             elif not server.voiceConnection.is_playing():
                 ''' Track Completed '''
                 print(server.queueIndex, len(server.queue))
-                if server.queueIndex >= len(server.queue):
-                    server.modifiedQueueIndex = 1
-                    if server.voiceConnection:
-                        await server.voiceConnection.disconnect()
-                        server.voiceConnection = None
-                        await Embed().channel_leave(server.context)
+                if server.queueIndex >= len(server.queue)-1:
+                    await server.disconnect()
+                    await Embed().channel_leave(server.context)
                     continue
                 else:
                     server.queueIndex += 1
