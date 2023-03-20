@@ -13,6 +13,7 @@ FFMPEG_OPTS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_
 class Lifecycle:
     @staticmethod
     async def update():
+        print("Updating lifecycle")
         for server in Commands.recognisedServers:
             ''' Empty Queue '''
             if not server.queue:
@@ -62,7 +63,9 @@ class Lifecycle:
                 continue
             ''' Track Playback '''
             track = server.queue[server.queueIndex]
+            print(f"Playing track {track}")
             url = await youtube.fetch_url(track, 251)
+            print(f"Fetched URL {track}")
             try:
                 server.voiceConnection.play(
                     discord.FFmpegOpusAudio(url, **FFMPEG_OPTS),
@@ -70,6 +73,7 @@ class Lifecycle:
                         Commands.listenUpdates(), Commands.bot.loop
                     ),
                 )
+                print(f"Played track {track}")
                 ''' Run mainloop after playback completion. '''
             except:
                 try:

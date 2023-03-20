@@ -223,8 +223,11 @@ class Playback(Commands):
         try:
             ''' Add To Queue '''
             server.queue.append(video)
+            print(server.voiceConnection)
             if not server.voiceConnection:
+                print("Connecting to VC")
                 await server.connect()
+                print("Connected to VC")
                 ''' Run mainloop to notice server.voiceConnection. '''
                 await Commands.listenUpdates()
             else:

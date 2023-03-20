@@ -43,6 +43,7 @@ class YouTube:
         else:
             videoId = self.__getVideoId(videoName)
         video = await Video.get(videoId)
+        print(video)
         return video
             
     def __getVideoId(self, videoLink: str) -> str:

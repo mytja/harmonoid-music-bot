@@ -1,6 +1,6 @@
 git+https://github.com/sigma67/ytmusicapi@master
 git+https://github.com/alexmercerind/youtube-search-python
-yt-dlp
+git+https://github.com/yt-dlp/yt-dlp
 aiofiles
-py-cord[voice,speed]
+git+https://github.com/Pycord-Development/pycord
 pynacl
