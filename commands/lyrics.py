@@ -2,14 +2,11 @@ from commands import *
 
 
 class Lyrics(Commands):
-
     def __init__(self):
         super().__init__(Commands.bot)
 
     @commands.command(aliases=['l'])
     async def lyrics(self, ctx, *, arg):
-        if not (server := await Server.get(ctx)):
-            return None
         lyrics = await self.youtubeMusic.getLyrics(arg)
         if lyrics:
             if len(lyrics['lyrics']) > 1800:
@@ -29,8 +26,6 @@ class Lyrics(Commands):
     
     @commands.command(aliases=['ls'])
     async def lyricsSend(self, ctx, *, arg):
-        if not (server := await Server.get(ctx)):
-            return None
         lyrics = await self.youtubeMusic.getLyrics(arg, True)
         if lyrics:
             await self.embed.file(
