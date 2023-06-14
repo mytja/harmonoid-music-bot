@@ -1,3 +1,4 @@
+import yt_dlp
 from youtubesearchpython.__future__ import VideosSearch, Video, StreamURLFetcher
 
 from typing import List, Union
@@ -42,9 +43,10 @@ class YouTube:
             videoId = video['id']
         else:
             videoId = self.__getVideoId(videoName)
-        video = await Video.get(videoId)
-        print(video)
-        return video
+        with yt_dlp.YoutubeDL() as ytd:
+            video = ytd.extract_info(f'https://youtu.be/{videoId}', download=False)
+            print(video)
+            return video
             
     def __getVideoId(self, videoLink: str) -> str:
         if 'youtu.be' in videoLink:

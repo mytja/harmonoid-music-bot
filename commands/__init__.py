@@ -64,8 +64,8 @@ class Lifecycle:
             ''' Track Playback '''
             track = server.queue[server.queueIndex]
             print(f"Playing track {track}")
-            url = await youtube.fetch_url(track, 251)
-            print(f"Fetched URL {track}")
+            url = track["requested_formats"][-1]["url"]
+            print(f"Fetched URL {url}")
             try:
                 server.voiceConnection.play(
                     discord.FFmpegOpusAudio(url, **FFMPEG_OPTS),
@@ -95,7 +95,8 @@ class Lifecycle:
             ''' Displaying Metadata '''
             try:
                 await Embed().nowPlaying(server.context, track)
-            except:
+            except Exception as e:
+                print(e)
                 await Embed().exception(
                     server.context,
                     'Now Playing',

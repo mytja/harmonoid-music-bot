@@ -29,11 +29,11 @@ class Embed:
             await self.__createEmbed(
                 context,
                 'Now Playing',
-                f'**[{video["title"]}]({video["link"]})**',
+                f'**[{video["title"]}](https://youtu.be/{video["id"]})**',
                 video['thumbnails'][-1]['url'],
                 [
-                    EmbedField('Channel', video['channel']['name'], False),
-                    EmbedField('Duration', Method.formatDuration(video["duration"]["secondsText"]), True),
+                    EmbedField('Channel', video['uploader'], False),
+                    EmbedField('Duration', f'{video["duration"]//60}:{video["duration"]%60}', True),
                 ],
                 '🎶',
                 True,
