@@ -1,4 +1,4 @@
-git+https://github.com/sigma67/ytmusicapi@master
+git+https://github.com/sigma67/ytmusicapi
 git+https://github.com/alexmercerind/youtube-search-python
 git+https://github.com/yt-dlp/yt-dlp
 aiofiles
