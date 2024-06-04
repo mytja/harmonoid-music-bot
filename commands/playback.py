@@ -39,7 +39,7 @@ class Playback(Commands):
         await self.embed.exception(
             ctx,
             'Internal Error',
-            'Oops, this command was recently removed. You don\'t to setup a channel before playback, just hop into a voice channel & get started with music playback. ℹ',
+            'Oops, this command was recently removed. You don\'t need to setup a channel before playback, just hop into a voice channel & get started with music playback. ℹ',
             '❌'
         )
         return None

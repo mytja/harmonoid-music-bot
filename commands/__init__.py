@@ -1,3 +1,5 @@
+from typing import List
+
 import discord
 from discord.ext import commands
 import asyncio
@@ -38,7 +40,7 @@ class Lifecycle:
             elif not server.voiceConnection.is_playing():
                 ''' Track Completed '''
                 print(server.queueIndex, len(server.queue))
-                if server.queueIndex >= len(server.queue)-1:
+                if server.queueIndex + 1 >= len(server.queue):
                     await server.disconnect()
                     await Embed().channel_leave(server.context)
                     continue
@@ -63,7 +65,7 @@ class Lifecycle:
                 continue
             ''' Track Playback '''
             track = server.queue[server.queueIndex]
-            print(f"Playing track {track}")
+            #print(f"Playing track {track}")
             url = track["requested_formats"][-1]["url"]
             print(f"Fetched URL {url}")
             try:
@@ -73,7 +75,7 @@ class Lifecycle:
                         Commands.listenUpdates(), Commands.bot.loop
                     ),
                 )
-                print(f"Played track {track}")
+                #print(f"Played track {track}")
                 ''' Run mainloop after playback completion. '''
             except:
                 try:
@@ -105,26 +107,10 @@ class Lifecycle:
                 )
 
 
-class Commands(commands.Cog):
-    """ Static Members """
-    bot = None
-    recognisedServers: list = []
-
-    @staticmethod
-    async def listenUpdates():
-        await Lifecycle.update()
-
-    def __init__(self, bot):
-        self.bot = bot
-        self.embed = Embed()
-        self.youtubeMusic = YouTubeMusic()
-
-
 class Server:
-    def __init__(self, context, serverId, textChannel, voiceChannel):
+    def __init__(self, context, serverId, voiceChannel):
         self.context = context
         self.serverId = serverId
-        self.textChannel = textChannel
         self.voiceChannel = voiceChannel
         self.voiceConnection = None
         self.queueIndex = -1
@@ -142,6 +128,9 @@ class Server:
         self.queueIndex = -1
         self.modifiedQueueIndex = None
 
+    def change_context(self, context):
+        self.context = context
+
     def get_latency(self) -> float:
         return self.voiceConnection.average_latency
 
@@ -158,19 +147,22 @@ class Server:
     async def get(context, connect: bool = False):
         asyncio.ensure_future(context.message.add_reaction('👀'))
         for server in Commands.recognisedServers:
-            if server.serverId == context.message.guild.id:
-                if context.author.voice:
-                    server.voiceChannel = context.author.voice.channel
-                    if server.voiceConnection:
-                        await server.voiceConnection.move_to(server.voiceChannel)
-                    elif connect:
+            if server.serverId != context.message.guild.id:
+                continue
+            if context.author.voice:
+                server.voiceChannel = context.author.voice.channel
+                if server.voiceConnection:
+                    await server.voiceConnection.move_to(server.voiceChannel)
+                elif connect:
+                    try:
                         await server.connect()
-                if connect and not server.voiceConnection:
-                    return None
-                server.textChannel = Commands.bot.get_channel(context.message.channel.id)
-                return server
+                    except Exception as e:
+                        continue
+            if connect and not server.voiceConnection:
+                return None
+            server.change_context(context)
+            return server
         serverId = context.message.guild.id
-        textChannel = Commands.bot.get_channel(context.message.channel.id)
         if context.author.voice is None:
             return None
         voiceChannel = context.author.voice.channel
@@ -178,8 +170,22 @@ class Server:
             Server(
                 context,
                 serverId,
-                textChannel,
                 voiceChannel,
             )
         )
         return Commands.recognisedServers[-1]
+
+
+class Commands(commands.Cog):
+    """ Static Members """
+    bot = None
+    recognisedServers: List[Server] = []
+
+    @staticmethod
+    async def listenUpdates():
+        await Lifecycle.update()
+
+    def __init__(self, bot):
+        self.bot = bot
+        self.embed = Embed()
+        self.youtubeMusic = YouTubeMusic()

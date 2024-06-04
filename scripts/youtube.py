@@ -45,7 +45,7 @@ class YouTube:
             videoId = self.__getVideoId(videoName)
         with yt_dlp.YoutubeDL() as ytd:
             video = ytd.extract_info(f'https://youtu.be/{videoId}', download=False)
-            print(video)
+            #print(video)
             return video
             
     def __getVideoId(self, videoLink: str) -> str:

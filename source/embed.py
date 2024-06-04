@@ -79,11 +79,11 @@ class Embed:
             await self.__createEmbed(
                 context,
                 'Added To Queue',
-                f'**[{video["title"]}]({video["link"]})**',
+                f'**[{video["title"]}](https://youtu.be/{video["id"]})**',
                 video['thumbnails'][-1]['url'],
                 [
-                    EmbedField('Channel', video['channel']['name'], False),
-                    EmbedField('Duration', Method.formatDuration(video["duration"]["secondsText"]), True),
+                    EmbedField('Channel', video['uploader'], False),
+                    EmbedField('Duration', video["duration_string"], True),
                 ],
                 '🎶',
                 True,
@@ -162,7 +162,7 @@ class Embed:
             if 'trackName' in query.keys():
                 queueString += f'  {index + 1}. {query["trackName"]} - _{", ".join(query["trackArtistNames"])}_\n    {Method.formatDuration(query["trackDuration"])}\n'
             else:
-                queueString += f'  {index + 1}. {query["title"]} - _{query["channel"]["name"]}_\n    {Method.formatDuration(query["duration"]["secondsText"])}\n'
+                queueString += f'  {index + 1}. {query["title"]} - _{query["uploader"]}_\n    {query["duration_string"]}\n'
         await self.__createEmbed(
             context,
             'Queue',
