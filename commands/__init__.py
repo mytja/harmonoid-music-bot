@@ -66,7 +66,10 @@ class Lifecycle:
             ''' Track Playback '''
             track = server.queue[server.queueIndex]
             print(f"Playing track {track}")
-            url = track["requested_formats"][-1]["url"]
+            if track.get("requested_formats") is not None:
+                url = track["requested_formats"][-1]["url"]
+            else:
+                url = track["formats"][-1]["url"]
             print(f"Fetched URL {url}")
             try:
                 server.voiceConnection.play(
