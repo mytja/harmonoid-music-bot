@@ -65,7 +65,7 @@ class Lifecycle:
                 continue
             ''' Track Playback '''
             track = server.queue[server.queueIndex]
-            #print(f"Playing track {track}")
+            print(f"Playing track {track}")
             url = track["requested_formats"][-1]["url"]
             print(f"Fetched URL {url}")
             try:
