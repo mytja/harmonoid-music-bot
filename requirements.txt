@@ -4,3 +4,4 @@ git+https://github.com/yt-dlp/yt-dlp
 aiofiles
 git+https://github.com/Pycord-Development/pycord
 pynacl
+httpx==0.27.2
