@@ -1,4 +1,4 @@
-<!-- bump6 -->
+<!-- bump7 -->
 
 <h1 align='center'><a href='https://github.com/harmonoid/harmonoid-music-bot'>Harmonoid Music Bot</a></h1>
 <h4 align='center'>🎵 Music bot for Discord. Supports lyrics, queues & plays using both YT Music & YouTube.</h4>
